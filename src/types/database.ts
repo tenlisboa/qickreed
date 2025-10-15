@@ -56,3 +56,11 @@ export interface UserAssessmentHistory {
   created_at: string;
   text_title: string;
 }
+
+export interface DashboardData {
+  current_wpm: number;
+  current_comprehension: number;
+  target_wpm: number;
+  history: UserAssessmentHistory[];
+  has_assessments: boolean;
+}
