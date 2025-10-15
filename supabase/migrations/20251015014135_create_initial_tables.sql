@@ -1,12 +1,9 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create text_types enum
 CREATE TYPE text_type AS ENUM ('diagnostic', 'training');
 
 -- Create text table
 CREATE TABLE text (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     type text_type NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
@@ -18,7 +15,7 @@ CREATE TABLE text (
 
 -- Create diagnostic_session table
 CREATE TABLE diagnostic_session (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     text_id UUID NOT NULL REFERENCES text(id) ON DELETE CASCADE,
     reading_time_ms INTEGER NOT NULL,
@@ -29,7 +26,7 @@ CREATE TABLE diagnostic_session (
 
 -- Create training_session table (for future RSVP module)
 CREATE TABLE training_session (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     text_id UUID NOT NULL REFERENCES text(id) ON DELETE CASCADE,
     target_wpm INTEGER NOT NULL,
