@@ -8,7 +8,7 @@ import {
   DocumentIcon,
   UserIcon,
   CogIcon,
-  ArrowRightOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 interface SidebarProps {
@@ -17,24 +17,14 @@ interface SidebarProps {
 
 const navigationItems = [
   {
-    name: "Dashboard",
+    name: "Meu Progresso",
     href: "/dashboard",
     icon: HomeIcon,
   },
   {
-    name: "Documents",
-    href: "/documents",
+    name: "Diagnóstico",
+    href: "/assessment",
     icon: DocumentIcon,
-  },
-  {
-    name: "Profile",
-    href: "/profile",
-    icon: UserIcon,
-  },
-  {
-    name: "Settings",
-    href: "/settings",
-    icon: CogIcon,
   },
 ];
 
@@ -134,7 +124,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
           `}
           title={isCollapsed ? "Sign out" : undefined}
         >
-          <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
+          <ArrowRightStartOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
           {!isCollapsed && <span className="ml-3">Sign out</span>}
         </button>
       </div>
