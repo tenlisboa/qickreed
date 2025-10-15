@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import {
+  HomeIcon,
+  DocumentIcon,
+  UserIcon,
+  CogIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/react/24/outline";
 
 interface SidebarProps {
   className?: string;
@@ -12,22 +19,22 @@ const navigationItems = [
   {
     name: "Dashboard",
     href: "/dashboard",
-    icon: "🏠",
+    icon: HomeIcon,
   },
   {
     name: "Documents",
     href: "/documents",
-    icon: "📄",
+    icon: DocumentIcon,
   },
   {
     name: "Profile",
     href: "/profile",
-    icon: "👤",
+    icon: UserIcon,
   },
   {
     name: "Settings",
     href: "/settings",
-    icon: "⚙️",
+    icon: CogIcon,
   },
 ];
 
@@ -83,7 +90,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
                   `}
                   title={isCollapsed ? item.name : undefined}
                 >
-                  <span className="text-base flex-shrink-0">{item.icon}</span>
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
                   {!isCollapsed && (
                     <span className="ml-3 truncate">{item.name}</span>
                   )}
@@ -101,7 +108,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
           {!isCollapsed ? (
             <div className="flex items-center">
               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 text-sm">👤</span>
+                <UserIcon className="h-4 w-4 text-gray-600" />
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-black">John Doe</p>
@@ -111,7 +118,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
           ) : (
             <div className="flex justify-center">
               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 text-sm">👤</span>
+                <UserIcon className="h-4 w-4 text-gray-600" />
               </div>
             </div>
           )}
@@ -127,7 +134,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
           `}
           title={isCollapsed ? "Sign out" : undefined}
         >
-          <span className="text-base flex-shrink-0">🚪</span>
+          <ArrowRightOnRectangleIcon className="h-5 w-5 flex-shrink-0" />
           {!isCollapsed && <span className="ml-3">Sign out</span>}
         </button>
       </div>
