@@ -1,0 +1,36 @@
+---
+description: Always when creating folders and files
+alwaysApply: false
+---
+
+# Project Structure
+
+QickReed is a Next.js 15 application built with React 19, TypeScript, Tailwind CSS v4, DaisyUI, and Supabase for authentication. This document outlines the development guidelines, UI/UX standards, and code patterns for the project.
+
+## Technology Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Frontend**: React 19, TypeScript
+- **Styling**: Tailwind CSS v4, DaisyUI
+- **Authentication**: Supabase
+- **Linting/Formatting**: Biome
+- **Package Manager**: pnpm
+
+## Directory Structure
+
+```
+src/
+├── app/
+│   ├── (auth)/           # Authentication routes
+│   │   ├── login/
+│   │   └── signup/
+│   ├── (authenticated)/  # Protected routes
+│   │   ├── dashboard/
+│   │   ├── documents/
+│   │   ├── profile/
+│   │   └── settings/
+│   └── error/
+├── components/           # Reusable components
+└── utils/               # Utility functions
+    └── supabase/        # Supabase client configurations
+```

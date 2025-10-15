@@ -1,0 +1,86 @@
+---
+description: Supabase authentication and database patterns
+alwaysApply: true
+---
+
+# Supabase Authentication Patterns
+
+## Client Creation
+
+### Server Client
+
+```tsx
+// src/utils/supabase/server.ts
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+
+export async function createClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Server Component context - can be ignored with middleware
+          }
+        },
+      },
+    }
+  );
+}
+```
+
+### Client Component
+
+```tsx
+// src/utils/supabase/client.ts
+import { createBrowserClient } from "@supabase/ssr";
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  );
+}
+```
+
+## Authentication Flow
+
+1. **Login**: Use Server Actions for authentication
+2. **Session Management**: Handle via middleware
+3. **Route Protection**: Implement in layout components
+4. **Logout**: Server Action with redirect
+
+## Database Patterns
+
+- Use Supabase as the backend
+- Follow RLS (Row Level Security) policies
+- Use server actions for database operations when possible
+- Implement proper session management
+- Follow security best practices
+
+## Environment Variables
+
+Required environment variables:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
+
+## Security Guidelines
+
+- Follow security best practices
+- Implement proper data validation
+- Use RLS policies correctly
+- Handle authentication errors gracefully

@@ -1,0 +1,98 @@
+---
+description: Next.js App Router patterns and conventions
+alwaysApply: true
+---
+
+# Next.js App Router Patterns
+
+## Route Organization
+
+- **Route Groups**: Use `(auth)` and `(authenticated)` for logical grouping
+- **Nested Layouts**: Use `layout.tsx` for shared layouts
+- **Loading States**: Create `loading.tsx` files for loading UI
+- **Error Handling**: Use `error.tsx` for error boundaries
+
+## File Naming Conventions
+
+- **Pages**: `page.tsx` (route pages)
+- **Layouts**: `layout.tsx` (shared layouts)
+- **Loading**: `loading.tsx` (loading UI)
+- **Errors**: `error.tsx` (error boundaries)
+- **Actions**: `actions.ts` (Server Actions)
+- **API Routes**: `route.ts` (API endpoints)
+
+## Server Actions
+
+```tsx
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+
+export async function login(formData: FormData) {
+  const supabase = await createClient();
+
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
+
+  const { error } = await supabase.auth.signInWithPassword(data);
+
+  if (error) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+```
+
+## Metadata and SEO
+
+```tsx
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "QickReed - Sign In",
+  description: "Sign in to your QickReed account",
+};
+```
+
+## Middleware Configuration
+
+```tsx
+// src/middleware.ts
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/utils/supabase/middleware";
+
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};
+```
+
+## Development Workflow
+
+### Before Starting Development
+
+1. **Read UI Guidelines**: Review `/docs/ui-guidelines.md`
+2. **Check Existing Patterns**: Look at similar components/pages
+3. **Follow TypeScript**: Use strict typing
+4. **Test Responsiveness**: Mobile-first approach
+
+### Code Review Checklist
+
+- [ ] Follows UI/UX guidelines
+- [ ] Proper TypeScript typing
+- [ ] Accessibility considerations
+- [ ] Responsive design
+- [ ] Consistent naming conventions
+- [ ] Proper error handling
+- [ ] Security considerations (auth, validation)

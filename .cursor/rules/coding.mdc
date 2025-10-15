@@ -1,0 +1,57 @@
+---
+description: General coding standards and formatting
+alwaysApply: true
+---
+
+# Coding Rules
+
+## General Principles
+
+- Always keep it simple
+- Prefer using Tailwind CSS over CSS
+- Prefer server actions over API routes in Next.js
+- Never comment out code
+- Always ask for clarification when description is not clear
+- Prefer using Functional approach over Class based approach
+- Always look for obsolete code and remove it, but verify with the user first
+
+## Code Formatting & Linting
+
+### Biome Configuration
+
+The project uses Biome for formatting and linting with these settings:
+
+```json
+{
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    },
+    "domains": {
+      "next": "recommended",
+      "react": "recommended"
+    }
+  }
+}
+```
+
+## Performance Guidelines
+
+- Optimize for performance
+- Use proper React patterns
+- Minimize unnecessary re-renders
+- Use proper error handling
+- Log errors appropriately
+
+## Error Handling
+
+- Implement proper error handling
+- Use user-friendly error messages
+- Log errors appropriately
+- Handle authentication errors gracefully

@@ -1,0 +1,141 @@
+---
+description: TypeScript and React development patterns
+alwaysApply: true
+---
+
+# TypeScript & React Patterns
+
+## TypeScript Configuration
+
+- **Strict Mode**: Always use `strict: true`
+- **Path Mapping**: Use `@/*` for src imports
+- **Type Safety**: Prefer explicit typing over `any`
+
+## Component Patterns
+
+### Server Components (Default)
+
+```tsx
+// Default export - Server Component
+export default function PageComponent() {
+  return <div>Server Component</div>;
+}
+```
+
+### Client Components
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export default function ClientComponent() {
+  const [state, setState] = useState(false);
+  return <div>Client Component</div>;
+}
+```
+
+## Interface Definitions
+
+```tsx
+interface ComponentProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: string;
+}
+```
+
+## React Hooks Usage
+
+```tsx
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+
+export default function NavigationComponent() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Component logic
+}
+```
+
+## File Naming Conventions
+
+### Components
+
+- **PascalCase**: `Sidebar.tsx`, `UserProfile.tsx`
+- **Default exports**: Use default export for main component
+- **Props interfaces**: Define in same file or separate types file
+
+### Pages and Routes
+
+- **kebab-case**: `user-profile/page.tsx`, `forgot-password/page.tsx`
+- **Special files**: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`
+
+### Utilities
+
+- **camelCase**: `authUtils.ts`, `dateHelpers.ts`
+- **kebab-case**: `supabase-client.ts`, `api-helpers.ts`
+
+## Import Organization
+
+```tsx
+// 1. React imports
+import { useState } from "react";
+
+// 2. Next.js imports
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+// 3. Third-party imports
+import { createClient } from "@supabase/supabase-js";
+
+// 4. Local imports
+import { login } from "./actions";
+```
+
+## Common Patterns
+
+### Form Handling
+
+```tsx
+<form className="space-y-6">
+  <div className="form-control">
+    <label className="label" htmlFor="email">
+      <span className="label-text text-black font-medium">Email</span>
+    </label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      required
+      className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
+    />
+  </div>
+</form>
+```
+
+### Navigation Components
+
+```tsx
+<Link
+  href={item.href}
+  className={`
+    flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors
+    ${
+      isActive
+        ? "bg-black text-white"
+        : "text-gray-600 hover:bg-gray-100 hover:text-black"
+    }
+  `}
+>
+  <span className="text-base flex-shrink-0">{item.icon}</span>
+  <span className="ml-3 truncate">{item.name}</span>
+</Link>
+```

@@ -1,0 +1,243 @@
+---
+description: Always when building screens or whole features
+alwaysApply: false
+---
+
+# UI/UX Design Guidelines
+
+## Design Philosophy
+
+QickReed follows a **minimalist, monochromatic design** approach with these core principles:
+
+1. **Minimalism First**: Clean, uncluttered interfaces focused on functionality
+2. **Monochromatic Elegance**: Black, white, and gray color palette for timeless appeal
+3. **User-Centered Design**: Every element serves a clear purpose
+4. **Accessibility**: Inclusive design that works for all users
+5. **Consistency**: Uniform patterns across all interfaces
+
+## Color Palette
+
+```css
+/* Primary Colors */
+--primary-white: #ffffff     /* Backgrounds, cards */
+--primary-black: #000000     /* Text, buttons, borders */
+--dark-gray: #171717         /* Dark theme text */
+--medium-gray: #6b7280       /* Secondary text */
+--light-gray: #d1d5db        /* Borders, dividers */
+--background-gray: #f9fafb   /* Alternative backgrounds */
+```
+
+## Typography
+
+**Font Stack**: Geist Sans (primary), system fonts fallback
+
+```css
+font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+  sans-serif;
+```
+
+## Text Hierarchy
+
+- **H1**: `text-3xl font-bold` (30px, 700 weight, black)
+- **H2**: `text-2xl font-semibold` (24px, 600 weight, black)
+- **H3**: `text-xl font-medium` (20px, 500 weight, dark gray)
+- **Body**: `text-base` (16px, 400 weight, black)
+- **Secondary**: `text-gray-600` (16px, 400 weight, medium gray)
+- **Small**: `text-sm` (14px, 400 weight, medium gray)
+- **Extra Small**: `text-xs` (12px, 400 weight, light gray)
+
+## Component Standards
+
+### Cards
+
+```tsx
+<div className="card bg-white border border-gray-200 shadow-lg">
+  <div className="card-body p-8">{/* Content */}</div>
+</div>
+```
+
+### Icons
+
+We use the Heroicons library for icons.
+
+```tsx
+<Icon name="icon-name" className="text-black" />
+```
+
+### Form Elements
+
+### Input Fields
+
+```tsx
+<input
+  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
+  placeholder="Enter your email"
+/>
+```
+
+### Labels
+
+```tsx
+<label className="label" htmlFor="email">
+  <span className="label-text text-black font-medium">Email</span>
+</label>
+```
+
+### Primary Button
+
+```tsx
+<button className="btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors">
+  Sign In
+</button>
+```
+
+### Secondary Button (Links)
+
+```tsx
+<Link href="/signup" className="text-black font-medium hover:underline">
+  Sign up
+</Link>
+```
+
+### Layout Components
+
+### Page Container
+
+```tsx
+<div className="min-h-screen bg-white flex items-center justify-center px-4">
+  <div className="w-full max-w-md">{/* Content */}</div>
+</div>
+```
+
+### Brand Section
+
+```tsx
+<div className="text-center mb-8">
+  <h1 className="text-3xl font-bold text-black">QickReed</h1>
+  <p className="text-gray-600 mt-2">Sign in to your account</p>
+</div>
+```
+
+### Spacing System
+
+Use Tailwind's spacing scale consistently:
+
+- **Form fields**: `space-y-6` (1.5rem vertical spacing)
+- **Card padding**: `p-8` (2rem)
+- **Section margins**: `mb-8`, `mt-8` (2rem)
+- **Element spacing**: `mt-2` (0.5rem)
+
+### Interactive States
+
+### Focus States
+
+```css
+.focus\:border-black:focus {
+  border-color: #000000;
+  outline: none;
+}
+```
+
+### Hover States
+
+```css
+.hover\:bg-gray-800:hover {
+  background-color: #1f2937;
+}
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+```
+
+### Transitions
+
+```css
+.transition-colors {
+  transition: color 150ms ease-in-out, background-color 150ms ease-in-out;
+}
+```
+
+### Accessibility Guidelines
+
+1. **Form Accessibility**: Every form field must have an associated label using `htmlFor`
+2. **Required Fields**: Use the `required` attribute for mandatory fields
+3. **Focus Indicators**: All interactive elements must have visible focus states
+4. **Color Contrast**: All text must meet WCAG AA contrast requirements
+5. **Keyboard Navigation**: Logical tab order through interactive elements
+
+## Tailwind CSS & DaisyUI Standards
+
+### DaisyUI Components Used
+
+- `card`, `card-body`: Container components
+- `input`, `input-bordered`: Form inputs
+- `btn`, `btn-block`: Buttons
+- `form-control`, `label`, `label-text`: Form structure
+- `divider`: Visual separators
+
+### Tailwind Class Patterns
+
+**Layout**:
+
+```tsx
+className = "min-h-screen bg-white flex items-center justify-center px-4";
+```
+
+**Typography**:
+
+```tsx
+className = "text-3xl font-bold text-black";
+className = "text-gray-600 mt-2";
+```
+
+**Interactive Elements**:
+
+```tsx
+className =
+  "btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors";
+```
+
+**Form Elements**:
+
+```tsx
+className =
+  "input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0";
+```
+
+### Responsive Design
+
+- **Mobile First**: Start with mobile styles
+- **Breakpoints**: Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`)
+- **Container**: Max width `max-w-md` for forms, `max-w-4xl` for content
+
+## Future Considerations
+
+### Dark Mode Support
+
+The foundation is prepared for dark mode implementation:
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+```
+
+### Component Library Expansion
+
+As the application grows, consider creating:
+
+- Navigation components
+- Dashboard cards
+- Data tables
+- Modal dialogs
+- Loading states
+- Error states
+
+All future components should adhere to the established design principles and color palette outlined in this document.
+
+---
+
+_This document serves as the foundation for all development in QickReed. Any deviations from these guidelines should be documented and approved by the development team._
