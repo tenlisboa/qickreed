@@ -24,6 +24,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "daisyui": "^5.2.3",
+    "supabase": "^2.51.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

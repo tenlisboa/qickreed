@@ -2,3 +2,4 @@ onlyBuiltDependencies:
   - '@prisma/client'
   - '@tailwindcss/oxide'
   - sharp
+  - supabase
