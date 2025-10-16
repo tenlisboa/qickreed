@@ -65,6 +65,8 @@ export function createClient() {
 
 - Use Supabase as the backend
 - Follow RLS (Row Level Security) policies
+- Use the `user_role` enum for the `role` column in the `auth.users` table
+- For performance reasons, use the `(SELECT auth.<function>())` or equivalent syntax to avoid re-evaluation per row
 - Use server actions for database operations when possible
 - Implement proper session management
 - Follow security best practices
