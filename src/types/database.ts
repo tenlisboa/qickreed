@@ -1,4 +1,12 @@
-export type TextType = "diagnostic" | "training";
+export enum TextType {
+  DIAGNOSTIC = "diagnostic",
+  TRAINING = "training",
+}
+
+export enum UserRole {
+  MEMBER = "member",
+  ADMIN = "admin",
+}
 
 export interface Text {
   id: string;
@@ -63,4 +71,11 @@ export interface DashboardData {
   target_wpm: number;
   history: UserAssessmentHistory[];
   has_assessments: boolean;
+}
+
+export interface Profile {
+  id: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
 }

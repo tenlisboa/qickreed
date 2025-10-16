@@ -2,40 +2,67 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   HomeIcon,
   DocumentIcon,
   UserIcon,
   CogIcon,
   ArrowRightStartOnRectangleIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { getUserRole } from "@/utils/auth/admin";
+import type { UserRole } from "@/types/database";
 
 interface SidebarProps {
   className?: string;
 }
 
-const navigationItems = [
-  {
-    name: "Meu Progresso",
-    href: "/dashboard",
-    icon: HomeIcon,
-  },
-  {
-    name: "Diagnóstico",
-    href: "/assessment",
-    icon: DocumentIcon,
-  },
-];
+const getNavigationItems = (userRole: UserRole | null) => {
+  const baseItems = [
+    {
+      name: "Meu Progresso",
+      href: "/dashboard",
+      icon: HomeIcon,
+    },
+    {
+      name: "Diagnóstico",
+      href: "/assessment",
+      icon: DocumentIcon,
+    },
+  ];
+
+  // Add admin item if user is admin
+  if (userRole === "admin") {
+    baseItems.push({
+      name: "Admin",
+      href: "/admin/texts",
+      icon: ShieldCheckIcon,
+    });
+  }
+
+  return baseItems;
+};
 
 export default function Sidebar({ className = "" }: SidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const role = await getUserRole();
+      setUserRole(role);
+    };
+    fetchUserRole();
+  }, []);
 
   const handleLogout = async () => {
     // TODO: Implement logout functionality
     console.log("Logout clicked");
   };
+
+  const navigationItems = getNavigationItems(userRole);
 
   return (
     <div
