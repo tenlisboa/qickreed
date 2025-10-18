@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 
 interface ScrollLockTextAreaProps {
   content: string;
@@ -12,6 +13,51 @@ export default function ScrollLockTextArea({
   className = "",
 }: ScrollLockTextAreaProps) {
   const textAreaRef = useRef<HTMLDivElement>(null);
+
+  const sanitizedContent = DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "u",
+      "b",
+      "i",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "a",
+      "span",
+      "div",
+    ],
+    ALLOWED_ATTR: ["href", "target", "class", "id"],
+    ALLOW_DATA_ATTR: false,
+    FORBID_TAGS: [
+      "script",
+      "style",
+      "iframe",
+      "object",
+      "embed",
+      "form",
+      "input",
+      "button",
+    ],
+    FORBID_ATTR: [
+      "onload",
+      "onerror",
+      "onclick",
+      "onmouseover",
+      "onfocus",
+      "onblur",
+    ],
+  });
 
   useEffect(() => {
     const textArea = textAreaRef.current;
@@ -32,6 +78,7 @@ export default function ScrollLockTextArea({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.currentTarget as HTMLElement;
       // Prevent arrow up, page up, home when at top
       if (
         target.scrollTop <= 0 &&
@@ -59,13 +106,10 @@ export default function ScrollLockTextArea({
       tabIndex={0}
       style={{ scrollBehavior: "smooth" }}
     >
-      <div className="prose prose-sm max-w-none text-black leading-relaxed">
-        {content.split("\n").map((paragraph, index) => (
-          <p key={index} className="mb-4 last:mb-0">
-            {paragraph}
-          </p>
-        ))}
-      </div>
+      <div
+        className="prose prose-sm max-w-none text-black leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      />
     </div>
   );
 }
