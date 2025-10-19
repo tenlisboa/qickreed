@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { saveDiagnosticSession } from "../actions";
+import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import QuizQuestion from "@/components/QuizQuestion";
@@ -36,14 +36,9 @@ export default function QuizPage() {
 
   const fetchText = async (textId: string) => {
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("text")
-        .select("*")
-        .eq("id", textId)
-        .single();
+      const data = await getTextById(textId);
 
-      if (error || !data) {
+      if (!data) {
         setError("Erro ao carregar texto");
         return;
       }

@@ -1,0 +1,141 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
+import type { TrainingHistory, Text, TrainingType } from "@/types/database";
+
+export async function getTrainingHistory(): Promise<TrainingHistory[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("training_session")
+    .select(
+      `
+      id,
+      training_type,
+      target_wpm,
+      duration_time_s,
+      created_at,
+      text:text_id (
+        title
+      )
+    `
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching training history:", error);
+    return [];
+  }
+
+  return data.map((session) => ({
+    id: session.id,
+    training_type: session.training_type as TrainingType,
+    target_wpm: session.target_wpm,
+    duration_time_s: session.duration_time_s,
+    created_at: session.created_at,
+    text_title: (session.text as any)?.title || "Texto não encontrado",
+  }));
+}
+
+export async function getRandomTrainingText(): Promise<Text | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("text")
+    .select("*")
+    .eq("type", "training")
+    .order("random()")
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error("Error fetching random training text:", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function createTrainingSession(
+  textId: string,
+  trainingType: TrainingType,
+  targetWpm: number,
+  durationSeconds: number
+): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("training_session")
+    .insert({
+      text_id: textId,
+      training_type: trainingType,
+      target_wpm: targetWpm,
+      duration_time_s: durationSeconds,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Error creating training session:", error);
+    return null;
+  }
+
+  revalidatePath("/training");
+  return data.id;
+}
+
+export async function getLastDiagnosticWpm(): Promise<number | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("diagnostic_session")
+    .select("wpm")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error("Error fetching last diagnostic WPM:", error);
+    return null;
+  }
+
+  return data?.wpm || null;
+}
+
+export async function getTrainingSessionById(
+  sessionId: string
+): Promise<TrainingHistory | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("training_session")
+    .select(
+      `
+      id,
+      training_type,
+      target_wpm,
+      duration_time_s,
+      created_at,
+      text:text_id (
+        title
+      )
+    `
+    )
+    .eq("id", sessionId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching training session:", error);
+    return null;
+  }
+
+  return {
+    id: data.id,
+    training_type: data.training_type as TrainingType,
+    target_wpm: data.target_wpm,
+    duration_time_s: data.duration_time_s,
+    created_at: data.created_at,
+    text_title: (data.text as any)?.title || "Texto não encontrado",
+  };
+}

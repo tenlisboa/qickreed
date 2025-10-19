@@ -10,6 +10,7 @@ import {
   CogIcon,
   ArrowRightStartOnRectangleIcon,
   ShieldCheckIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import { getUserRole } from "@/utils/auth/admin";
 import type { UserRole } from "@/types/database";
@@ -29,6 +30,11 @@ const getNavigationItems = (userRole: UserRole | null) => {
       name: "Diagnóstico",
       href: "/assessment",
       icon: DocumentIcon,
+    },
+    {
+      name: "Treinamento",
+      href: "/training",
+      icon: AcademicCapIcon,
     },
   ];
 

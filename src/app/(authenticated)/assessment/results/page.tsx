@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Link from "next/link";
+import { getLatestDiagnosticSession } from "../actions";
 import {
   TagIcon,
   BookOpenIcon,
@@ -27,49 +27,14 @@ export default function ResultsPage() {
 
   const fetchLatestResults = async () => {
     try {
-      const supabase = createClient();
+      const data = await getLatestDiagnosticSession();
 
-      // Get user's latest diagnostic session
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-      if (userError || !user) {
-        router.push("/login");
-        return;
-      }
-
-      const { data: session, error: sessionError } = await supabase
-        .from("diagnostic_session")
-        .select(
-          `
-          wpm,
-          comprehension_score,
-          reading_time_ms,
-          text:text_id (
-            title
-          )
-        `
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
-
-      if (sessionError || !session) {
+      if (!data) {
         setError("Resultados não encontrados");
         return;
       }
 
-      const targetWpm = Math.round(session.wpm * 1.2);
-
-      setResults({
-        wpm: session.wpm,
-        comprehension_score: session.comprehension_score,
-        target_wpm: targetWpm,
-        text_title: (session.text as any)?.title || "Texto não encontrado",
-        reading_time_seconds: Math.round(session.reading_time_ms / 1000),
-      });
+      setResults(data);
     } catch (err) {
       setError("Erro ao carregar resultados");
     } finally {

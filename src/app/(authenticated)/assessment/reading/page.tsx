@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Timer from "@/components/Timer";
 import ScrollLockTextArea from "@/components/ScrollLockTextArea";
+import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import type { Text } from "@/types/database";
 
 export default function ReadingPage() {
@@ -32,14 +32,9 @@ export default function ReadingPage() {
 
   const fetchText = async () => {
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("text")
-        .select("*")
-        .eq("id", textId)
-        .single();
+      const data = await getTextById(textId!);
 
-      if (error) {
+      if (!data) {
         setError("Erro ao carregar texto");
         return;
       }

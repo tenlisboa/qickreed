@@ -3,6 +3,10 @@ export enum TextType {
   TRAINING = "training",
 }
 
+export enum TrainingType {
+  RSVP = "rsvp",
+}
+
 export enum UserRole {
   MEMBER = "member",
   ADMIN = "admin",
@@ -44,6 +48,7 @@ export interface TrainingSession {
   id: string;
   user_id: string;
   text_id: string;
+  training_type: TrainingType;
   target_wpm: number;
   duration_time_s: number;
   created_at: string;
@@ -78,4 +83,13 @@ export interface Profile {
   role: UserRole;
   created_at: string;
   updated_at: string;
+}
+
+export interface TrainingHistory {
+  id: string;
+  training_type: TrainingType;
+  target_wpm: number;
+  duration_time_s: number;
+  created_at: string;
+  text_title: string;
 }

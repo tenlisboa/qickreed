@@ -241,15 +241,12 @@ export default function DashboardPage() {
           Próximos Passos
         </h2>
         <div className="flex flex-wrap gap-4">
-          <Button
-            variant="primary"
-            disabled
-            className="px-8 opacity-50 cursor-not-allowed"
-            title="Em breve - Treinamento RSVP estará disponível"
-          >
-            <RocketLaunchIcon className="h-4 w-4 mr-2" />
-            Iniciar Treinamento RSVP
-          </Button>
+          <Link href="/training/rsvp">
+            <Button variant="primary" className="px-8">
+              <RocketLaunchIcon className="h-4 w-4 mr-2" />
+              Iniciar Treinamento RSVP
+            </Button>
+          </Link>
           <Link href="/assessment">
             <Button variant="secondary" className="px-8">
               <BookOpenIcon className="h-4 w-4 mr-2" />
@@ -258,8 +255,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          O treinamento RSVP estará disponível em breve para acelerar sua
-          leitura.
+          Acelere sua leitura com o treinamento RSVP e técnicas avançadas.
         </p>
       </div>
     </div>

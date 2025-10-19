@@ -160,6 +160,38 @@ export async function checkUserHasAssessment(): Promise<boolean> {
   return data && data.length > 0;
 }
 
+export async function getLatestDiagnosticSession(): Promise<AssessmentResult | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("diagnostic_session")
+    .select(
+      `
+      wpm,
+      comprehension_score,
+      reading_time_ms,
+      text:text_id (
+        title
+      )
+    `
+    )
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return {
+    wpm: data.wpm,
+    comprehension_score: data.comprehension_score,
+    target_wpm: Math.round(data.wpm * 1.2),
+    text_title: (data.text as any)?.title || "Texto não encontrado",
+    reading_time_seconds: Math.round(data.reading_time_ms / 1000),
+  };
+}
+
 export async function startAssessment() {
   const supabase = await createClient();
 
