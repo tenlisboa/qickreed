@@ -44,7 +44,7 @@ The project uses Biome for formatting and linting with these settings:
 ## Performance Guidelines
 
 - Optimize for performance
-- Use proper React patterns
+- When accessing params from page, use the use() function to unwrap the promise
 - Minimize unnecessary re-renders
 - Use proper error handling
 - Log errors appropriately
