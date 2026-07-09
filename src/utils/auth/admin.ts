@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { UserRole } from "@/types/database";
 
 export async function checkAdminAccess(): Promise<{
@@ -27,7 +28,8 @@ export async function checkAdminAccess(): Promise<{
     .single();
 
   if (roleError || !profile) {
-    console.error("Error fetching user role:", roleError);
+    const log = await getRequestLogger({ module: "checkAdminAccess" });
+    log.error({ err: roleError }, "Failed to fetch user role");
     redirect("/dashboard");
   }
 

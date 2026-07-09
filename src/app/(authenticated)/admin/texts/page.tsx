@@ -183,8 +183,7 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
         setTotalCount(result.totalCount);
         setTotalPages(result.totalPages);
         setCurrentPage(result.currentPage);
-      } catch (error) {
-        console.error("Error fetching texts:", error);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -211,9 +210,7 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
         setTotalCount(result.totalCount);
         setTotalPages(result.totalPages);
         setCurrentPage(result.currentPage);
-      } catch (error) {
-        console.error("Error fetching texts:", error);
-      }
+      } catch {}
     };
     fetchTexts();
   };

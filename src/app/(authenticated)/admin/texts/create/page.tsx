@@ -30,8 +30,7 @@ export default function CreateTextPage() {
       } else {
         setError(result.error || "Erro ao criar texto");
       }
-    } catch (err) {
-      console.error("Error creating text:", err);
+    } catch {
       setError("Erro inesperado ao criar texto");
     } finally {
       setIsSubmitting(false);

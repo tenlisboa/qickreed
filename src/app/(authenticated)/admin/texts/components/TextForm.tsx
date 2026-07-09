@@ -66,8 +66,7 @@ export default function TextForm({
         num_words: wordCount,
         type: data.type as TextType,
       });
-    } catch (err) {
-      console.error("Error submitting form:", err);
+    } catch {
       setError("Erro inesperado ao processar formulário");
     }
   };

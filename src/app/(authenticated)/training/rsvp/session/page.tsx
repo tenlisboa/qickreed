@@ -67,11 +67,9 @@ function RsvpSessionPageContent() {
         const { sessionId } = await response.json();
         router.push(`/training/rsvp/feedback?sessionId=${sessionId}`);
       } else {
-        console.error("Erro ao salvar sessão");
         router.push("/training");
       }
-    } catch (err) {
-      console.error("Erro ao salvar sessão:", err);
+    } catch {
       router.push("/training");
     }
   };

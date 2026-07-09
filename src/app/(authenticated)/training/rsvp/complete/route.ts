@@ -1,6 +1,7 @@
 import { createTrainingSession } from "../../actions";
 import { TrainingType } from "@/types/database";
 import { NextRequest, NextResponse } from "next/server";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ sessionId });
   } catch (error) {
-    console.error("Erro na API de conclusão de treinamento:", error);
+    const log = await getRequestLogger({ module: "rsvp-complete-route" });
+    log.error({ err: error }, "Failed to complete training session");
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }

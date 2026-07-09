@@ -34,8 +34,7 @@ export default function EditTextPage({ params }: EditTextPageProps) {
         } else {
           setError("Texto não encontrado");
         }
-      } catch (err) {
-        console.error("Error fetching text:", err);
+      } catch {
         setError("Erro ao carregar texto");
       } finally {
         setIsLoading(false);
@@ -60,8 +59,7 @@ export default function EditTextPage({ params }: EditTextPageProps) {
       } else {
         setError(result.error || "Erro ao atualizar texto");
       }
-    } catch (err) {
-      console.error("Error updating text:", err);
+    } catch {
       setError("Erro inesperado ao atualizar texto");
     } finally {
       setIsSubmitting(false);
