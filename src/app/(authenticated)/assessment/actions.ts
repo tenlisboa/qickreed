@@ -19,7 +19,7 @@ export async function getRandomDiagnosticText(): Promise<Text | null> {
     .eq("language", "pt-BR")
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Error fetching diagnostic text:", error);

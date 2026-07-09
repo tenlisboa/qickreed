@@ -1,3 +1,7 @@
+allowBuilds:
+  '@tailwindcss/oxide': true
+  sharp: true
+  supabase: true
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@tailwindcss/oxide'
