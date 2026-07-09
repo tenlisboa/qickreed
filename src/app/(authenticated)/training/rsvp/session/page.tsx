@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import RsvpDisplay from "@/components/RsvpDisplay";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import type { Text } from "@/types/database";
 
-export default function RsvpSessionPage() {
+function RsvpSessionPageContent() {
   const [text, setText] = useState<Text | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,5 +117,22 @@ export default function RsvpSessionPage() {
       onComplete={handleComplete}
       onStop={handleStop}
     />
+  );
+}
+
+export default function RsvpSessionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando treinamento...</p>
+          </div>
+        </div>
+      }
+    >
+      <RsvpSessionPageContent />
+    </Suspense>
   );
 }

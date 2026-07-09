@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
@@ -9,7 +9,7 @@ import ScrollLockTextArea from "@/components/ScrollLockTextArea";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import type { Text } from "@/types/database";
 
-export default function ReadingPage() {
+function ReadingPageContent() {
   const [text, setText] = useState<Text | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -166,5 +166,22 @@ export default function ReadingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ReadingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando texto...</p>
+          </div>
+        </div>
+      }
+    >
+      <ReadingPageContent />
+    </Suspense>
   );
 }
