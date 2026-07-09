@@ -1,4 +1,5 @@
 allowBuilds:
+  '@sentry/cli': false
   '@tailwindcss/oxide': true
   sharp: true
   supabase: true
