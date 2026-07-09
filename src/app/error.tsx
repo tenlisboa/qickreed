@@ -1,0 +1,39 @@
+"use client";
+
+import * as Sentry from "@sentry/nextjs";
+import { useEffect } from "react";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+
+export default function RootError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <Card className="w-full max-w-md text-center" padding="lg">
+        <h1 className="text-3xl font-bold text-black">Algo deu errado</h1>
+        <p className="text-gray-600 mt-2">
+          Ocorreu um erro inesperado. Tente novamente em instantes.
+        </p>
+        {error.digest ? (
+          <p className="text-sm text-gray-500 mt-4">
+            Código de referência: {error.digest}
+          </p>
+        ) : null}
+        <div className="mt-8">
+          <Button variant="primary" onClick={reset}>
+            Tentar novamente
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
