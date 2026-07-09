@@ -3,6 +3,10 @@ import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  // Set on the request BEFORE updateSession so it is forwarded via
+  // `NextResponse.next({ request })` and visible to `headers()` downstream
+  // (Server Actions / Route Handlers / Server Components).
+  request.headers.set("x-request-id", requestId);
   const response = await updateSession(request);
   response.headers.set("x-request-id", requestId);
   return response;
