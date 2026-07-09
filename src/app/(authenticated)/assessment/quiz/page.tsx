@@ -114,8 +114,8 @@ export default function QuizPage() {
         comprehensionScore
       );
 
-      if (!result) {
-        setError("Erro ao salvar resultados");
+      if (result.error) {
+        setError(result.error.message);
         return;
       }
 
