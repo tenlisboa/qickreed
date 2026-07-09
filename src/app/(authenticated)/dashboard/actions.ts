@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { DashboardData, UserAssessmentHistory } from "@/types/database";
 
 export async function getDashboardData(): Promise<DashboardData | null> {
@@ -11,7 +12,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     error: userError,
   } = await supabase.auth.getUser();
   if (userError || !user) {
-    console.error("Error getting user:", userError);
+    const log = await getRequestLogger({ module: "getDashboardData" });
+    log.error({ err: userError }, "Failed to get user");
     return null;
   }
 
@@ -48,7 +50,8 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     .order("created_at", { ascending: true });
 
   if (historyError) {
-    console.error("Error fetching diagnostic history:", historyError);
+    const log = await getRequestLogger({ module: "getDashboardData" });
+    log.error({ err: historyError }, "Failed to fetch diagnostic history");
     return null;
   }
 

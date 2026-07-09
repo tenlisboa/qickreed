@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { TrainingHistory, Text, TrainingType } from "@/types/database";
 
 export async function getTrainingHistory(): Promise<TrainingHistory[]> {
@@ -24,7 +25,8 @@ export async function getTrainingHistory(): Promise<TrainingHistory[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching training history:", error);
+    const log = await getRequestLogger({ module: "getTrainingHistory" });
+    log.error({ err: error }, "Failed to fetch training history");
     return [];
   }
 
@@ -50,7 +52,8 @@ export async function getRandomTrainingText(): Promise<Text | null> {
     .single();
 
   if (error) {
-    console.error("Error fetching random training text:", error);
+    const log = await getRequestLogger({ module: "getRandomTrainingText" });
+    log.error({ err: error }, "Failed to fetch random training text");
     return null;
   }
 
@@ -77,7 +80,8 @@ export async function createTrainingSession(
     .single();
 
   if (error) {
-    console.error("Error creating training session:", error);
+    const log = await getRequestLogger({ module: "createTrainingSession" });
+    log.error({ err: error }, "Failed to create training session");
     return null;
   }
 
@@ -96,7 +100,8 @@ export async function getLastDiagnosticWpm(): Promise<number | null> {
     .single();
 
   if (error) {
-    console.error("Error fetching last diagnostic WPM:", error);
+    const log = await getRequestLogger({ module: "getLastDiagnosticWpm" });
+    log.error({ err: error }, "Failed to fetch last diagnostic WPM");
     return null;
   }
 
@@ -126,7 +131,8 @@ export async function getTrainingSessionById(
     .single();
 
   if (error) {
-    console.error("Error fetching training session:", error);
+    const log = await getRequestLogger({ module: "getTrainingSessionById" });
+    log.error({ err: error }, "Failed to fetch training session");
     return null;
   }
 

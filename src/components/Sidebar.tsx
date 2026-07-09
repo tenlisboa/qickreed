@@ -65,7 +65,6 @@ export default function Sidebar({ className = "" }: SidebarProps) {
 
   const handleLogout = async () => {
     // TODO: Implement logout functionality
-    console.log("Logout clicked");
   };
 
   const navigationItems = getNavigationItems(userRole);

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import type {
   Text,
   DiagnosticSession,
@@ -22,7 +23,8 @@ export async function getRandomDiagnosticText(): Promise<Text | null> {
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching diagnostic text:", error);
+    const log = await getRequestLogger({ module: "getRandomDiagnosticText" });
+    log.error({ err: error }, "Failed to fetch diagnostic text");
     return null;
   }
 
@@ -42,7 +44,8 @@ export async function saveDiagnosticSession(
     error: userError,
   } = await supabase.auth.getUser();
   if (userError || !user) {
-    console.error("Error getting user:", userError);
+    const log = await getRequestLogger({ module: "saveDiagnosticSession" });
+    log.error({ err: userError }, "Failed to get user");
     return null;
   }
 
@@ -54,7 +57,8 @@ export async function saveDiagnosticSession(
     .single();
 
   if (textError || !text) {
-    console.error("Error fetching text data:", textError);
+    const log = await getRequestLogger({ module: "saveDiagnosticSession" });
+    log.error({ err: textError }, "Failed to fetch text data");
     return null;
   }
 
@@ -78,7 +82,8 @@ export async function saveDiagnosticSession(
     .single();
 
   if (sessionError) {
-    console.error("Error saving diagnostic session:", sessionError);
+    const log = await getRequestLogger({ module: "saveDiagnosticSession" });
+    log.error({ err: sessionError }, "Failed to save diagnostic session");
     return null;
   }
 
@@ -101,7 +106,8 @@ export async function getUserDiagnosticHistory(): Promise<
     error: userError,
   } = await supabase.auth.getUser();
   if (userError || !user) {
-    console.error("Error getting user:", userError);
+    const log = await getRequestLogger({ module: "getUserDiagnosticHistory" });
+    log.error({ err: userError }, "Failed to get user");
     return [];
   }
 
@@ -122,7 +128,8 @@ export async function getUserDiagnosticHistory(): Promise<
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching diagnostic history:", error);
+    const log = await getRequestLogger({ module: "getUserDiagnosticHistory" });
+    log.error({ err: error }, "Failed to fetch diagnostic history");
     return [];
   }
 
@@ -153,7 +160,8 @@ export async function checkUserHasAssessment(): Promise<boolean> {
     .limit(1);
 
   if (error) {
-    console.error("Error checking assessment:", error);
+    const log = await getRequestLogger({ module: "checkUserHasAssessment" });
+    log.error({ err: error }, "Failed to check assessment existence");
     return false;
   }
 

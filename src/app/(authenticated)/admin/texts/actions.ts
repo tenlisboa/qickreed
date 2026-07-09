@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { Text, TextType } from "@/types/database";
 
 export interface TextListParams {
@@ -44,7 +45,8 @@ export async function getTexts({
   const { data, error, count } = await query;
 
   if (error) {
-    console.error("Error fetching texts:", error);
+    const log = await getRequestLogger({ module: "getTexts" });
+    log.error({ err: error }, "Failed to fetch texts");
     throw new Error("Erro ao buscar textos");
   }
 
@@ -69,7 +71,8 @@ export async function getTextById(id: string): Promise<Text | null> {
     .single();
 
   if (error) {
-    console.error("Error fetching text:", error);
+    const log = await getRequestLogger({ module: "getTextById" });
+    log.error({ err: error }, "Failed to fetch text");
     return null;
   }
 
@@ -94,7 +97,8 @@ export async function deleteText(
   const { error } = await supabase.from("text").delete().eq("id", id);
 
   if (error) {
-    console.error("Error deleting text:", error);
+    const log = await getRequestLogger({ module: "deleteText" });
+    log.error({ err: error }, "Failed to delete text");
     return {
       success: false,
       error: "Erro ao deletar texto",
@@ -149,7 +153,8 @@ export async function createText(
     .single();
 
   if (error) {
-    console.error("Error creating text:", error);
+    const log = await getRequestLogger({ module: "createText" });
+    log.error({ err: error }, "Failed to create text");
     return {
       success: false,
       error: "Erro ao criar texto",
@@ -177,7 +182,8 @@ export async function updateText(
   const { error } = await supabase.from("text").update(data).eq("id", id);
 
   if (error) {
-    console.error("Error updating text:", error);
+    const log = await getRequestLogger({ module: "updateText" });
+    log.error({ err: error }, "Failed to update text");
     return {
       success: false,
       error: "Erro ao atualizar texto",
