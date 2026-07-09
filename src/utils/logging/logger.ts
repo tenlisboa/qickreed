@@ -7,10 +7,16 @@ export const logger = pino({
   base: { env: process.env.NODE_ENV },
   redact: {
     paths: [
+      "password",
+      "token",
+      "apiKey",
+      "authorization",
+      "access_token",
+      "refresh_token",
+      "secret",
       "*.password",
       "*.token",
       "*.apiKey",
-      "authorization",
       "*.access_token",
       "*.refresh_token",
       "*.secret",
