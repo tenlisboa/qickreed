@@ -3,14 +3,16 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { getRequestLogger } from "@/utils/logging/request-logger";
+import { ok, fail } from "@/utils/actions/types";
 import type {
   Text,
   DiagnosticSession,
   AssessmentResult,
   UserAssessmentHistory,
 } from "@/types/database";
+import type { ActionResult } from "@/utils/actions/types";
 
-export async function getRandomDiagnosticText(): Promise<Text | null> {
+export async function getRandomDiagnosticText(): Promise<ActionResult<Text>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -25,17 +27,21 @@ export async function getRandomDiagnosticText(): Promise<Text | null> {
   if (error) {
     const log = await getRequestLogger({ module: "getRandomDiagnosticText" });
     log.error({ err: error }, "Failed to fetch diagnostic text");
-    return null;
+    return fail("db_error", "Erro ao carregar texto de avaliação", error);
   }
 
-  return data;
+  if (!data) {
+    return fail("not_found", "Nenhum texto de avaliação disponível");
+  }
+
+  return ok(data);
 }
 
 export async function saveDiagnosticSession(
   textId: string,
   readingTimeMs: number,
   comprehensionScore: number
-): Promise<AssessmentResult | null> {
+): Promise<ActionResult<AssessmentResult>> {
   const supabase = await createClient();
 
   // Get user
@@ -46,7 +52,7 @@ export async function saveDiagnosticSession(
   if (userError || !user) {
     const log = await getRequestLogger({ module: "saveDiagnosticSession" });
     log.error({ err: userError }, "Failed to get user");
-    return null;
+    return fail("unauthorized", "Usuário não autenticado", userError);
   }
 
   // Get text data for calculations
@@ -59,7 +65,7 @@ export async function saveDiagnosticSession(
   if (textError || !text) {
     const log = await getRequestLogger({ module: "saveDiagnosticSession" });
     log.error({ err: textError }, "Failed to fetch text data");
-    return null;
+    return fail("not_found", "Texto não encontrado", textError);
   }
 
   // Calculate WPM
@@ -84,16 +90,20 @@ export async function saveDiagnosticSession(
   if (sessionError) {
     const log = await getRequestLogger({ module: "saveDiagnosticSession" });
     log.error({ err: sessionError }, "Failed to save diagnostic session");
-    return null;
+    return fail(
+      "db_error",
+      "Não foi possível salvar a sessão de avaliação",
+      sessionError
+    );
   }
 
-  return {
+  return ok({
     wpm: Math.round(wpm * 100) / 100, // Round to 2 decimal places
     comprehension_score: Math.round(comprehensionScore * 100) / 100,
     target_wpm: targetWpm,
     text_title: text.title,
     reading_time_seconds: Math.round(readingTimeMs / 1000),
-  };
+  });
 }
 
 export async function getUserDiagnosticHistory(): Promise<
@@ -212,10 +222,10 @@ export async function startAssessment() {
   }
 
   // Get random diagnostic text
-  const text = await getRandomDiagnosticText();
-  if (!text) {
+  const result = await getRandomDiagnosticText();
+  if (result.error || !result.data) {
     redirect("/error");
   }
 
-  redirect(`/assessment/reading?textId=${text.id}`);
+  redirect(`/assessment/reading?textId=${result.data.id}`);
 }
