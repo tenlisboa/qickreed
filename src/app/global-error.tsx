@@ -3,6 +3,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 import Button from "@/components/Button";
+import Card from "@/components/Card";
 
 export default function GlobalError({
   error,
@@ -19,7 +20,7 @@ export default function GlobalError({
     <html lang="pt-BR">
       <body className="antialiased">
         <div className="min-h-screen bg-white flex items-center justify-center px-4">
-          <div className="w-full max-w-md text-center bg-white border border-gray-200 shadow-lg p-8">
+          <Card className="w-full max-w-md text-center" padding="lg">
             <h1 className="text-3xl font-bold text-black">Algo deu errado</h1>
             <p className="text-gray-600 mt-2">
               Ocorreu um erro inesperado no carregamento do aplicativo. Tente
@@ -35,7 +36,7 @@ export default function GlobalError({
                 Tentar novamente
               </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </body>
     </html>
