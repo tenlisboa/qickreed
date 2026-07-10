@@ -6,6 +6,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
   className?: string;
+  asChild?: boolean;
 }
 
 const variantMap = {
@@ -25,6 +26,7 @@ export default function Button({
   variant = "primary",
   size = "md",
   className = "",
+  asChild,
   ...props
 }: ButtonProps) {
   return (
@@ -32,6 +34,7 @@ export default function Button({
       variant={variantMap[variant]}
       size={sizeMap[size]}
       className={className}
+      asChild={asChild}
       {...props}
     >
       {children}

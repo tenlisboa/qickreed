@@ -4,6 +4,8 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Button from "@/components/Button";
+import { Alert } from "@/components/ui/alert";
 import type { TextType } from "@/types/database";
 import { createText } from "../actions";
 import TextForm from "../components/TextForm";
@@ -39,31 +41,19 @@ export default function CreateTextPage() {
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/admin/texts" className="btn btn-ghost btn-sm">
-          <ArrowLeftIcon className="h-4 w-4" />
-          Voltar
-        </Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/admin/texts">
+            <ArrowLeftIcon className="h-4 w-4" />
+            Voltar
+          </Link>
+        </Button>
         <h1 className="text-3xl font-bold text-black">Criar Novo Texto</h1>
       </div>
 
       {error && (
-        <div className="alert alert-error mb-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <title>Error</title>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{error}</span>
-        </div>
+        <Alert variant="error" className="mb-6">
+          {error}
+        </Alert>
       )}
 
       <TextForm

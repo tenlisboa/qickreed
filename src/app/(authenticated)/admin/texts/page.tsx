@@ -4,7 +4,15 @@ import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import Button from "@/components/Button";
+import Card from "@/components/Card";
 import DeleteTextModal from "@/components/DeleteTextModal";
+import { Badge } from "@/components/ui/badge";
+import { FormControl } from "@/components/ui/form-control";
+import { Input } from "@/components/ui/input";
+import { Join } from "@/components/ui/join";
+import { Select } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { Table, TBody, TD, TH, THead, TR } from "@/components/ui/table";
 import { type Text, TextType } from "@/types/database";
 import { getTexts } from "./actions";
 
@@ -26,64 +34,60 @@ function TextTable({
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="table w-full">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="text-black font-semibold">Título</th>
-            <th className="text-black font-semibold">Tipo</th>
-            <th className="text-black font-semibold">Palavras</th>
-            <th className="text-black font-semibold">Idioma</th>
-            <th className="text-black font-semibold">Criado em</th>
-            <th className="text-black font-semibold">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <THead>
+          <TR>
+            <TH>Título</TH>
+            <TH>Tipo</TH>
+            <TH>Palavras</TH>
+            <TH>Idioma</TH>
+            <TH>Criado em</TH>
+            <TH>Ações</TH>
+          </TR>
+        </THead>
+        <TBody>
           {texts.map((text) => (
-            <tr key={text.id} className="hover:bg-gray-50">
-              <td className="text-black">
+            <TR key={text.id}>
+              <TD>
                 <div className="font-medium">{text.title}</div>
-              </td>
-              <td className="text-black">
-                <span
-                  className={`badge ${
-                    text.type === TextType.DIAGNOSTIC
-                      ? "bg-primary-800 text-white"
-                      : "bg-primary-200 text-primary-800"
-                  }`}
+              </TD>
+              <TD>
+                <Badge
+                  variant={
+                    text.type === TextType.DIAGNOSTIC ? "default" : "neutral"
+                  }
                 >
                   {text.type === TextType.DIAGNOSTIC
                     ? "Diagnóstico"
                     : "Treinamento"}
-                </span>
-              </td>
-              <td className="text-black">{text.num_words}</td>
-              <td className="text-black">{text.language}</td>
-              <td className="text-black">
-                {new Date(text.created_at).toLocaleDateString("pt-BR")}
-              </td>
-              <td className="text-black">
+                </Badge>
+              </TD>
+              <TD>{text.num_words}</TD>
+              <TD>{text.language}</TD>
+              <TD>{new Date(text.created_at).toLocaleDateString("pt-BR")}</TD>
+              <TD>
                 <div className="flex gap-2">
-                  <Link
-                    href={`/admin/texts/edit/${text.id}`}
-                    className="btn btn-sm btn-ghost text-black hover:bg-gray-200"
-                    title="Editar"
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </Link>
-                  <button
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/admin/texts/edit/${text.id}`} title="Editar">
+                      <PencilIcon className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button
                     type="button"
-                    className="btn btn-sm btn-ghost text-error hover:bg-red-50"
+                    variant="outline"
+                    size="sm"
                     title="Deletar"
+                    className="hover:bg-error"
                     onClick={() => onDeleteClick(text)}
                   >
                     <TrashIcon className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
-              </td>
-            </tr>
+              </TD>
+            </TR>
           ))}
-        </tbody>
-      </table>
+        </TBody>
+      </Table>
     </div>
   );
 }
@@ -113,37 +117,30 @@ function Pagination({
 
   return (
     <div className="flex justify-center">
-      <div className="join">
+      <Join>
         {currentPage > 1 && (
-          <Link
-            href={createPageUrl(currentPage - 1)}
-            className="join-item btn btn-sm"
-          >
-            «
-          </Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href={createPageUrl(currentPage - 1)}>«</Link>
+          </Button>
         )}
 
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <Link
+          <Button
             key={page}
-            href={createPageUrl(page)}
-            className={`join-item btn btn-sm ${
-              page === currentPage ? "btn-active" : ""
-            }`}
+            asChild
+            variant={page === currentPage ? "primary" : "outline"}
+            size="sm"
           >
-            {page}
-          </Link>
+            <Link href={createPageUrl(page)}>{page}</Link>
+          </Button>
         ))}
 
         {currentPage < totalPages && (
-          <Link
-            href={createPageUrl(currentPage + 1)}
-            className="join-item btn btn-sm"
-          >
-            »
-          </Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href={createPageUrl(currentPage + 1)}>»</Link>
+          </Button>
         )}
-      </div>
+      </Join>
     </div>
   );
 }
@@ -220,7 +217,7 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
     return (
       <div className="p-8">
         <div className="flex justify-center items-center h-64">
-          <span className="loading loading-spinner loading-lg"></span>
+          <Spinner size="lg" />
         </div>
       </div>
     );
@@ -239,71 +236,58 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
       </div>
 
       {/* Search and Filters */}
-      <div className="card bg-white border border-gray-200 shadow-lg mb-6">
-        <div className="card-body p-6">
-          <form method="GET" className="flex gap-4">
-            <div className="form-control flex-1">
-              <input
-                type="text"
-                name="search"
-                placeholder="Buscar por título..."
-                defaultValue={search}
-                className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-              />
-            </div>
-            <div className="form-control">
-              <select
-                name="sort"
-                defaultValue={sort}
-                className="select select-bordered bg-white border-gray-300 text-black focus:border-black focus:ring-0"
-              >
-                <option value="created_at">Data de Criação</option>
-                <option value="title">Título</option>
-                <option value="num_words">Número de Palavras</option>
-                <option value={TextType.DIAGNOSTIC}>Diagnóstico</option>
-                <option value={TextType.TRAINING}>Treinamento</option>
-              </select>
-            </div>
-            <div className="form-control">
-              <select
-                name="order"
-                defaultValue={order}
-                className="select select-bordered bg-white border-gray-300 text-black focus:border-black focus:ring-0"
-              >
-                <option value="desc">Decrescente</option>
-                <option value="asc">Crescente</option>
-              </select>
-            </div>
-            <button type="submit" className="btn btn-outline">
-              Filtrar
-            </button>
-          </form>
-        </div>
-      </div>
+      <Card shadow="lg" padding="md" className="mb-6">
+        <form method="GET" className="flex gap-4">
+          <FormControl className="flex-1">
+            <Input
+              type="text"
+              name="search"
+              placeholder="Buscar por título..."
+              defaultValue={search}
+            />
+          </FormControl>
+          <FormControl>
+            <Select name="sort" defaultValue={sort}>
+              <option value="created_at">Data de Criação</option>
+              <option value="title">Título</option>
+              <option value="num_words">Número de Palavras</option>
+              <option value={TextType.DIAGNOSTIC}>Diagnóstico</option>
+              <option value={TextType.TRAINING}>Treinamento</option>
+            </Select>
+          </FormControl>
+          <FormControl>
+            <Select name="order" defaultValue={order}>
+              <option value="desc">Decrescente</option>
+              <option value="asc">Crescente</option>
+            </Select>
+          </FormControl>
+          <Button type="submit" variant="outline">
+            Filtrar
+          </Button>
+        </form>
+      </Card>
 
       {/* Results */}
-      <div className="card bg-white border border-gray-200 shadow-lg">
-        <div className="card-body p-6">
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-600">
-              {totalCount} texto{totalCount !== 1 ? "s" : ""} encontrado
-              {totalCount !== 1 ? "s" : ""}
-            </p>
-          </div>
-
-          <TextTable texts={texts} onDeleteClick={handleDeleteClick} />
-
-          {totalPages > 1 && (
-            <div className="mt-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                searchParams={resolvedSearchParams}
-              />
-            </div>
-          )}
+      <Card shadow="lg" padding="md">
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-gray-600">
+            {totalCount} texto{totalCount !== 1 ? "s" : ""} encontrado
+            {totalCount !== 1 ? "s" : ""}
+          </p>
         </div>
-      </div>
+
+        <TextTable texts={texts} onDeleteClick={handleDeleteClick} />
+
+        {totalPages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              searchParams={resolvedSearchParams}
+            />
+          </div>
+        )}
+      </Card>
 
       {/* Delete Modal */}
       {deleteModal.text && (
