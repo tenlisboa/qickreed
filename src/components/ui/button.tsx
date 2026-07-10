@@ -36,13 +36,13 @@ const buttonVariants = cva(
         neutral:
           "bg-white text-black shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-sm active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
         outline:
-          "bg-transparent text-black hover:bg-black/5 active:bg-black/10",
+          "bg-transparent text-black shadow-brutal hover:bg-black/5 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-sm active:bg-black/10 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3",
+        default: "h-11 px-4 py-2",
+        sm: "h-11 px-3",
         lg: "h-11 px-8",
-        icon: "h-10 w-10",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {
