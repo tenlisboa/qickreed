@@ -47,8 +47,10 @@ export default function Timer({
   };
 
   return (
-    <div className={`text-center ${className}`}>
-      <div className="text-2xl font-mono font-bold text-black">
+    <div
+      className={`inline-flex items-center justify-center border-[3px] border-black bg-white rounded-base shadow-brutal-sm px-4 py-2 ${className}`}
+    >
+      <div className="text-2xl font-mono font-bold text-black tabular-nums">
         {formatTime(timeMs)}
       </div>
     </div>
