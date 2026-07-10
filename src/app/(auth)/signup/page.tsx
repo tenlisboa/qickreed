@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { signup } from "@/app/(auth)/login/actions";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { Divider } from "@/components/ui/divider";
+import { FormControl } from "@/components/ui/form-control";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
   return (
@@ -12,111 +18,95 @@ export default function SignupPage() {
         </div>
 
         {/* Signup Form Card */}
-        <div className="card bg-white border border-gray-200 shadow-lg">
-          <div className="card-body p-8">
-            <form className="space-y-6">
-              {/* Email Input */}
-              <div className="form-control">
-                <label className="label" htmlFor="email">
-                  <span className="label-text text-black font-medium">
-                    Email
-                  </span>
-                </label>
+        <Card shadow="md" padding="lg">
+          <form className="space-y-6">
+            {/* Email Input */}
+            <FormControl>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="w-full"
+                placeholder="Enter your email"
+              />
+            </FormControl>
+
+            {/* Password Input */}
+            <FormControl>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="w-full"
+                placeholder="Create a password"
+              />
+            </FormControl>
+
+            {/* Confirm Password Input */}
+            <FormControl>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                className="w-full"
+                placeholder="Confirm your password"
+              />
+            </FormControl>
+
+            {/* Terms and Conditions */}
+            <FormControl>
+              <label className="flex items-start gap-2 cursor-pointer">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  type="checkbox"
                   required
-                  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-                  placeholder="Enter your email"
+                  className="h-5 w-5 shrink-0 cursor-pointer appearance-none border-[3px] border-black bg-white transition-brutal focus-brutal checked:bg-black mt-0.5"
                 />
-              </div>
+                <span className="text-sm text-black/70 font-medium">
+                  I agree to the{" "}
+                  <Link href="/terms" className="text-black hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="text-black hover:underline">
+                    Privacy Policy
+                  </Link>
+                </span>
+              </label>
+            </FormControl>
 
-              {/* Password Input */}
-              <div className="form-control">
-                <label className="label" htmlFor="password">
-                  <span className="label-text text-black font-medium">
-                    Password
-                  </span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-                  placeholder="Create a password"
-                />
-              </div>
+            {/* Signup Button */}
+            <Button
+              type="submit"
+              formAction={signup}
+              variant="primary"
+              className="w-full"
+            >
+              Create Account
+            </Button>
+          </form>
 
-              {/* Confirm Password Input */}
-              <div className="form-control">
-                <label className="label" htmlFor="confirmPassword">
-                  <span className="label-text text-black font-medium">
-                    Confirm Password
-                  </span>
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-                  placeholder="Confirm your password"
-                />
-              </div>
+          {/* Divider */}
+          <Divider label="or" />
 
-              {/* Terms and Conditions */}
-              <div className="form-control">
-                <label className="label cursor-pointer justify-start">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm border-gray-300"
-                    required
-                  />
-                  <span className="label-text text-gray-600 ml-2">
-                    I agree to the{" "}
-                    <Link href="/terms" className="text-black hover:underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                      href="/privacy"
-                      className="text-black hover:underline"
-                    >
-                      Privacy Policy
-                    </Link>
-                  </span>
-                </label>
-              </div>
-
-              {/* Signup Button */}
-              <button
-                type="submit"
-                formAction={signup}
-                className="btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors"
+          {/* Login Link */}
+          <div className="text-center">
+            <p className="text-gray-600">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-black font-medium hover:underline"
               >
-                Create Account
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="divider text-gray-400">or</div>
-
-            {/* Login Link */}
-            <div className="text-center">
-              <p className="text-gray-600">
-                Already have an account?{" "}
-                <Link
-                  href="/login"
-                  className="text-black font-medium hover:underline"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
+                Sign in
+              </Link>
+            </p>
           </div>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center mt-8">

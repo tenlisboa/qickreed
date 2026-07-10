@@ -1,4 +1,10 @@
 import Link from "next/link";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { Divider } from "@/components/ui/divider";
+import { FormControl } from "@/components/ui/form-control";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { login } from "./actions";
 
 export default function LoginPage() {
@@ -12,80 +18,71 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Card */}
-        <div className="card bg-white border border-gray-200 shadow-lg">
-          <div className="card-body p-8">
-            <form className="space-y-6">
-              {/* Email Input */}
-              <div className="form-control">
-                <label className="label" htmlFor="email">
-                  <span className="label-text text-black font-medium">
-                    Email
-                  </span>
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-                  placeholder="Enter your email"
-                />
-              </div>
+        <Card shadow="md" padding="lg">
+          <form className="space-y-6">
+            {/* Email Input */}
+            <FormControl>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="w-full"
+                placeholder="Enter your email"
+              />
+            </FormControl>
 
-              {/* Password Input */}
-              <div className="form-control">
-                <label className="label" htmlFor="password">
-                  <span className="label-text text-black font-medium">
-                    Password
-                  </span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-                  placeholder="Enter your password"
-                />
-              </div>
+            {/* Password Input */}
+            <FormControl>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="w-full"
+                placeholder="Enter your password"
+              />
+            </FormControl>
 
-              {/* Forgot Password Link */}
-              <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-gray-600 hover:text-black transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                formAction={login}
-                className="btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors"
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-gray-600 hover:text-black transition-colors"
               >
-                Sign In
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="divider text-gray-400">or</div>
-
-            {/* Sign Up Link */}
-            <div className="text-center">
-              <p className="text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  href="/signup"
-                  className="text-black font-medium hover:underline"
-                >
-                  Sign up
-                </Link>
-              </p>
+                Forgot password?
+              </Link>
             </div>
+
+            {/* Login Button */}
+            <Button
+              type="submit"
+              formAction={login}
+              variant="primary"
+              className="w-full"
+            >
+              Sign In
+            </Button>
+          </form>
+
+          {/* Divider */}
+          <Divider label="or" />
+
+          {/* Sign Up Link */}
+          <div className="text-center">
+            <p className="text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                href="/signup"
+                className="text-black font-medium hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
           </div>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="text-center mt-8">
