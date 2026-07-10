@@ -14,8 +14,10 @@ mandate DaisyUI + a strict no-accent monochrome palette.
 - [ ] Replace the DaisyUI + monochrome styling foundation with a consistent neobrutalism
       system across every surface (navigation, forms, cards, tables, admin, **and the
       reading/training screens** — bold everywhere, per user decision).
-- [ ] Introduce a monochrome base (black/white/gray) plus **exactly one accent color**
-      (`#FFD23F`), used for primary actions / highlights.
+- [ ] Introduce a monochrome base (black/white/gray) plus **two accent colors**:
+      `#FFD23F` (yellow — primary actions / highlights / active states) and `#FF6B6B`
+      (red — error states). No green/success color; success is conveyed via icon + pt-BR
+      text + border.
 - [ ] Remove DaisyUI entirely: delete `@plugin "daisyui"`, uninstall the `daisyui`
       devDependency, leave zero DaisyUI class names in source.
 - [ ] Rewrite `CLAUDE.md` and `agent_docs/ui-ux_guidelines.mdc` to define the new system
@@ -40,7 +42,7 @@ mandate DaisyUI + a strict no-accent monochrome palette.
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 | --- | --- | --- | --- |
-| Palette | Monochrome black/white/gray base + one accent `#FFD23F` (yellow), reserved for primary actions / highlights. | User chose "monochrome + 1 accent". Relaxes CLAUDE.md's "no accents" rule to "exactly one accent". | y |
+| Palette | Monochrome black/white/gray base + **two accents**: `#FFD23F` (yellow — primary/highlights/active) and `#FF6B6B` (red — error states). Success stays non-color (icon + pt-BR text + border). | User chose "monochrome + 1 accent" in Specify, then in design confirmation chose to keep a dedicated error red as a 2nd accent. Relaxes CLAUDE.md to a defined 2-accent palette. | y |
 | Implementation library | `neobrutal-ui` (Bridgetamana) via `npx neobrutal init` + `npx neobrutal add ...`. | User chose the CLI library (TASK.md recommendation). | y |
 | Library stack compatibility | Assumed compatible with Tailwind v4 / Next 15 / React 19 / Biome, but **must be verified in Design / Phase 1**. If incompatible, fall back to hand-rolled Tailwind token-based components and escalate. | Never assume a third-party dep works; verification is mandatory before scaffolding. | n — verify in design |
 | Coverage gap for tokens with no library equivalent (`label`, `form-control`, `loading`, `join`, `divider`, `badge`, `table`, `range`, `checkbox`, `radio`) | Hand-rolled neobrutalist Tailwind classes driven by the same design tokens, so styling stays consistent. | `neobrutal-ui` ships Button/Card/Input/Select/Dialog/Alert etc. but not every DaisyUI token; the migration is library + token hybrid. | y |
@@ -98,9 +100,9 @@ tokens defined so every component can be built on a shared foundation.
    SHALL be escalated to before proceeding.
 2. WHEN `globals.css` loads THEN it SHALL define neobrutalism tokens: a 3px solid black
    border token, hard offset shadow tokens with **zero blur** (e.g. `4px 4px 0 0 #000`,
-   plus larger variants), `--radius: 0`, the monochrome base, and **exactly one** accent
-   `#FFD23F`. No blurred-shadow or rounded-corner tokens SHALL remain for primary
-   surfaces.
+   plus larger variants), `--radius: 0`, the monochrome base, and **two** accents: `#FFD23F` (primary/highlights)
+   and `#FF6B6B` (error). No blurred-shadow or rounded-corner tokens SHALL remain for
+   primary surfaces.
 3. WHEN `@plugin "daisyui"` is considered THEN it SHALL still be present at the end of
    this task (removal is P1-E, after components no longer depend on it) so the app stays
    functional mid-migration.
@@ -222,9 +224,9 @@ restyle.
 
 1. WHEN focus is given to any interactive element THEN a visible thick black focus
    outline SHALL appear (WCAG 2.4.7).
-2. WHEN the accent `#FFD23F` is used as a background with text THEN the text color SHALL
-   be chosen to meet WCAG AA contrast (≥4.5:1 normal text, ≥3:1 large text); black text
-   on `#FFD23F` is the expected pairing.
+2. WHEN an accent (`#FFD23F` or `#FF6B6B`) is used as a background with text THEN the
+   text color SHALL be black (both accents pass WCAG AA with black text: `#FFD23F` ≈ 17:1,
+   `#FF6B6B` ≈ 7.8:1); white-on-accent SHALL NOT be used (fails AA).
 3. WHEN viewed at ≤640px width THEN layout SHALL remain usable: no horizontal overflow,
    readable text, tappable targets ≥44px.
 4. WHEN hovering/activating any interactive element THEN the physical shift/shadow
@@ -267,30 +269,30 @@ of scope to implement.
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| NEO-01 | P1-A: Lint baseline | Execute | Pending |
-| NEO-02 | P1-B: Library + tokens | Design / Execute | Pending |
-| NEO-03 | P1-B: Token set in globals.css | Execute | Pending |
-| NEO-04 | P1-C: Button neobrutalist | Execute | Pending |
-| NEO-05 | P1-C: Card neobrutalist | Execute | Pending |
-| NEO-06 | P1-C: Form primitives neobrutalist | Execute | Pending |
-| NEO-07 | P1-D: Pages free of DaisyUI classes | Execute | Pending |
-| NEO-08 | P1-D: Reading screens full neobrutalism | Execute | Pending |
-| NEO-09 | P1-D: ActionResult error rendering preserved | Execute | Pending |
-| NEO-10 | P1-E: DaisyUI removed from source | Execute | Pending |
-| NEO-11 | P1-E: `@plugin "daisyui"` removed | Execute | Pending |
-| NEO-12 | P1-E: `daisyui` uninstalled | Execute | Pending |
-| NEO-13 | P1-E: Gate green (`pnpm lint && pnpm build`) | Execute | Pending |
-| NEO-14 | P1-F: CLAUDE.md rewritten | Execute | Pending |
-| NEO-15 | P1-F: ui-ux_guidelines.mdc rewritten | Execute | Pending |
-| NEO-16 | P2: Focus states visible | Execute | Pending |
-| NEO-17 | P2: Accent WCAG AA contrast | Execute | Pending |
-| NEO-18 | P2: Responsive ≤640px | Execute | Pending |
-| NEO-19 | P2: Physical hover/active consistency | Execute | Pending |
-| NEO-20 | P3: Dark-mode-friendly tokens | Execute | Pending |
+| NEO-01 | P1-A: Lint baseline | Execute | Verified |
+| NEO-02 | P1-B: Library + tokens | Design / Execute | Verified |
+| NEO-03 | P1-B: Token set in globals.css | Execute | Verified |
+| NEO-04 | P1-C: Button neobrutalist | Execute | Verified |
+| NEO-05 | P1-C: Card neobrutalist | Execute | Verified |
+| NEO-06 | P1-C: Form primitives neobrutalist | Execute | Verified |
+| NEO-07 | P1-D: Pages free of DaisyUI classes | Execute | Verified |
+| NEO-08 | P1-D: Reading screens full neobrutalism | Execute | Verified |
+| NEO-09 | P1-D: ActionResult error rendering preserved | Execute | Verified |
+| NEO-10 | P1-E: DaisyUI removed from source | Execute | Verified |
+| NEO-11 | P1-E: `@plugin "daisyui"` removed | Execute | Verified |
+| NEO-12 | P1-E: `daisyui` uninstalled | Execute | Verified |
+| NEO-13 | P1-E: Gate green (`pnpm lint && pnpm build`) | Execute | Verified |
+| NEO-14 | P1-F: CLAUDE.md rewritten | Execute | Verified |
+| NEO-15 | P1-F: ui-ux_guidelines.mdc rewritten | Execute | Verified |
+| NEO-16 | P2: Focus states visible | Execute | Verified |
+| NEO-17 | P2: Accent + error WCAG AA contrast | Execute | Verified |
+| NEO-18 | P2: Responsive ≤640px | Execute | Verified |
+| NEO-19 | P2: Physical hover/active consistency | Execute | Verified |
+| NEO-20 | P3: Dark-mode-friendly tokens | Execute | Verified |
 
 **ID format:** `NEO-NN`
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
-**Coverage:** 20 total, 0 mapped to tasks yet (tasks phase pending), 0 unmapped ⚠️
+**Coverage:** 20 total, 20 verified (NEO-01–19; NEO-20 w/ documented recharts-SVG dark-mode exception), 0 pending — awaiting independent Verifier
 
 ---
 
@@ -298,7 +300,8 @@ of scope to implement.
 
 - [ ] Every surface uses neobrutalist components consistently (borders 3px black, hard
       zero-blur offset shadows, square corners, flat fills, physical interactions).
-- [ ] Palette is monochrome + one accent `#FFD23F`; no other accent colors.
+- [ ] Palette is monochrome + two accents `#FFD23F` (yellow) and `#FF6B6B` (red, errors);
+      no other accent colors (no green/success color).
 - [ ] Zero DaisyUI class names in `src/`; `@plugin "daisyui"` gone; `daisyui`
       devDependency uninstalled.
 - [ ] `CLAUDE.md` and `agent_docs/ui-ux_guidelines.mdc` rewritten to the new system.

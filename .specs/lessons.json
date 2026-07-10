@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 2,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "spec_precision_gap::when a spec lists every variant of a component as requiring the same visual treatment border shadow hover active physics verify each variant individually a shared base class for the border is not enough per variant shadow and interaction physics must be asserted per variant",
+      "text": "When a spec lists every variant of a component as requiring the same visual treatment (border + shadow + hover/active physics), verify each variant individually — a shared base class for the border is not enough; per-variant shadow and interaction physics must be asserted per variant.",
+      "signal": "spec_precision_gap",
+      "scope": "ui-components",
+      "status": "candidate",
+      "features": ["neobrutalism-migration"],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "NEO-04 / src/components/ui/button.tsx:38-39 (ui-components)"
+      ],
+      "created": "2026-07-10T04:20:49Z",
+      "last_seen": "2026-07-10T04:20:49Z"
+    }
+  ]
+}

@@ -1,11 +1,27 @@
-# Lessons — Self-Improving Layer (no-script fallback)
+# LESSONS — auto-maintained by scripts/lessons.py
 
-> **Degraded path**: the canonical `scripts/lessons.py` does not exist in this repo,
-> so lessons are maintained by hand per `lessons.md` fallback. Accounting is
-> best-effort; promote candidate → confirmed only after the same lesson recurs in
-> 2 distinct features. Never hand-edit `lessons.json` (not maintained here).
+> Machine-owned. Do NOT hand-edit. Changes are overwritten on the next `lessons.py` write.
+> Canonical state lives in `.specs/lessons.json`. Edit lessons only via the script.
+> promote_threshold=2 distinct features · window_days=45 · quarantine_threshold=2
 
-| ID | Status | Scope | Lesson | Source (feature / file:line / AC) |
-| -- | ------ | ----- | ------- | ---------------------------------- |
-| L-001 | candidate | middleware/logging | To propagate a header from Next.js middleware to downstream server code, set it on the request forwarded via `NextResponse.next({ request })` (e.g. `request.headers.set(...)`), not on the response — `headers()` reads the request, not the response. | error-logging / `src/middleware.ts:7` / EL-03 |
-| L-002 | candidate | logging | Pino `redact` wildcards like `*.password` match only nested paths; list the un-wildcarded root path (`password`) too when a field must be redacted at the top level of a log object. | error-logging / `src/utils/logging/logger.ts:10-16` / EL-04 |
+## Confirmed (load these at Specify/Design)
+
+Corroborated across multiple features. Safe to apply as guidance.
+
+_none_
+
+## Candidates (under observation — do NOT load as guidance yet)
+
+Seen once or not yet corroborated. Tracked, not trusted.
+
+### L-001 — When a spec lists every variant of a component as requiring the same visual treatment (border + shadow + hover/active physics), verify each variant individually — a shared base class for the border is not enough; per-variant shadow and interaction physics must be asserted per variant.
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `ui-components` · harmful: 0
+- features: neobrutalism-migration
+- evidence: NEO-04 / src/components/ui/button.tsx:38-39 (ui-components)
+- last seen: 2026-07-10T04:20:49Z
+
+## Quarantined (failed when applied — ignore)
+
+A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.
+
+_none_

@@ -22,9 +22,10 @@ or reading-logic changes.
 ### Palette
 
 - Monochrome black/white/gray base.
-- **Exactly one** accent color: `#FFD23F` (yellow), reserved for primary actions /
-  highlights.
-- Relaxes CLAUDE.md's "no color accents" rule to "one accent".
+- **Two accents**: `#FFD23F` (yellow — primary actions / highlights / active states) and
+  `#FF6B6B` (red — error states). Success is non-color (icon + pt-BR text + border).
+- Relaxes CLAUDE.md's "no color accents" rule to a defined 2-accent palette (confirmed in
+  design confirmation; user initially chose 1 accent, then opted to keep error red).
 
 ### Implementation approach
 
@@ -87,7 +88,7 @@ or reading-logic changes.
 ## Specific References
 
 - TASK.md lists `#FFD23F` (yellow) and `#FF6B6B` (pink) as candidate accents; user chose
-  to keep only the yellow.
+  to keep yellow as the primary accent and red (`#FF6B6B`) specifically for error states.
 - TASK.md Phase-2 token snippet (`--border: 3px solid #000`, `--shadow: 5px 5px 0 0 #000`,
   `--radius: 0`, `--bg: #FFFDF5`) used as a starting reference; final base background to
   be confirmed in Design (the app is currently pure `#ffffff`).
