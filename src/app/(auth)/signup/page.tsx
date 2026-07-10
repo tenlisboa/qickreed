@@ -69,11 +69,17 @@ export default function SignupPage() {
                 />
                 <span className="text-sm text-black/70 font-medium">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-black hover:underline">
+                  <Link
+                    href="/terms"
+                    className="text-black hover:underline focus-brutal"
+                  >
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="/privacy" className="text-black hover:underline">
+                  <Link
+                    href="/privacy"
+                    className="text-black hover:underline focus-brutal"
+                  >
                     Privacy Policy
                   </Link>
                 </span>
@@ -100,7 +106,7 @@ export default function SignupPage() {
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-black font-medium hover:underline"
+                className="text-black font-medium hover:underline focus-brutal"
               >
                 Sign in
               </Link>

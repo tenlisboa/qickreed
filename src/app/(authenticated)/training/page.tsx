@@ -50,7 +50,7 @@ export default async function TrainingPage() {
                   <Badge variant="neutral">Aumenta velocidade</Badge>
                   <Badge variant="neutral">Melhora foco</Badge>
                 </div>
-                <Link href="/training/rsvp">
+                <Link href="/training/rsvp" className="focus-brutal">
                   <Button variant="primary" className="px-8">
                     Iniciar Treinamento RSVP
                     <ArrowRightIcon className="h-4 w-4 ml-2" />
@@ -121,7 +121,7 @@ export default async function TrainingPage() {
                   Comece seu primeiro treinamento RSVP para acelerar sua
                   leitura.
                 </p>
-                <Link href="/training/rsvp">
+                <Link href="/training/rsvp" className="focus-brutal">
                   <Button variant="primary" className="px-8">
                     Começar Primeiro Treino
                   </Button>
@@ -135,7 +135,7 @@ export default async function TrainingPage() {
         <div className="mt-8 text-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors focus-brutal"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Voltar ao Dashboard

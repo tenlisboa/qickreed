@@ -5,7 +5,9 @@ export default function Home() {
     <>
       <h1>Welcome to the Home Page!</h1>
 
-      <Link href="/dashboard">Go to Dashboard</Link>
+      <Link href="/dashboard" className="focus-brutal">
+        Go to Dashboard
+      </Link>
     </>
   );
 }

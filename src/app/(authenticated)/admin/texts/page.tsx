@@ -227,7 +227,7 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-black">Gerenciar Textos</h1>
-        <Link href="/admin/texts/create">
+        <Link href="/admin/texts/create" className="focus-brutal">
           <Button variant="primary" size="sm">
             <PlusIcon className="h-5 w-5 mr-2" />
             Novo Texto

@@ -108,7 +108,7 @@ export default function DashboardPage() {
             Para começar sua jornada de leitura acelerada, faça sua primeira
             avaliação.
           </p>
-          <Link href="/assessment">
+          <Link href="/assessment" className="focus-brutal">
             <Button variant="primary" className="px-8">
               <BookOpenIcon className="h-4 w-4 mr-2" />
               Fazer Primeira Avaliação
@@ -216,10 +216,10 @@ export default function DashboardPage() {
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: "var(--white)",
+                    border: "3px solid var(--black)",
+                    borderRadius: "0",
+                    boxShadow: "4px 4px 0 0 var(--black)",
                   }}
                 />
                 <Line
@@ -242,13 +242,13 @@ export default function DashboardPage() {
           Próximos Passos
         </h2>
         <div className="flex flex-wrap gap-4">
-          <Link href="/training/rsvp">
+          <Link href="/training/rsvp" className="focus-brutal">
             <Button variant="primary" className="px-8">
               <RocketLaunchIcon className="h-4 w-4 mr-2" />
               Iniciar Treinamento RSVP
             </Button>
           </Link>
-          <Link href="/assessment">
+          <Link href="/assessment" className="focus-brutal">
             <Button variant="secondary" className="px-8">
               <BookOpenIcon className="h-4 w-4 mr-2" />
               Nova Avaliação

@@ -246,7 +246,7 @@ export default function ResultsPage() {
             <TagIcon className="h-4 w-4 mr-2" />
             Fazer Nova Avaliação
           </Button>
-          <Link href="/dashboard">
+          <Link href="/dashboard" className="focus-brutal">
             <Button variant="secondary" className="px-8">
               <ArrowLeftIcon className="h-4 w-4 mr-2" />
               Ir para Dashboard

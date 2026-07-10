@@ -196,13 +196,13 @@ function RsvpFeedbackPageContent() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/training/rsvp">
+              <Link href="/training/rsvp" className="focus-brutal">
                 <Button variant="primary" className="w-full sm:w-auto px-8">
                   <AcademicCapIcon className="h-4 w-4 mr-2" />
                   Novo Treino
                 </Button>
               </Link>
-              <Link href="/training">
+              <Link href="/training" className="focus-brutal">
                 <Button variant="secondary" className="w-full sm:w-auto px-8">
                   Ver Histórico
                 </Button>
@@ -215,7 +215,7 @@ function RsvpFeedbackPageContent() {
         <div className="mt-8 text-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors focus-brutal"
           >
             <ArrowRightIcon className="h-4 w-4 mr-2" />
             Voltar ao Dashboard

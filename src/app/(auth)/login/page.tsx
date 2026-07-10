@@ -50,7 +50,7 @@ export default function LoginPage() {
             <div className="text-right">
               <Link
                 href="/forgot-password"
-                className="text-sm text-gray-600 hover:text-black transition-colors"
+                className="text-sm text-gray-600 hover:text-black transition-colors focus-brutal"
               >
                 Forgot password?
               </Link>
@@ -76,7 +76,7 @@ export default function LoginPage() {
               Don't have an account?{" "}
               <Link
                 href="/signup"
-                className="text-black font-medium hover:underline"
+                className="text-black font-medium hover:underline focus-brutal"
               >
                 Sign up
               </Link>

@@ -26,7 +26,7 @@ export default async function RsvpPreparationPage() {
             <p className="text-gray-600 mb-6">
               Não há textos de treinamento disponíveis no momento.
             </p>
-            <Link href="/training">
+            <Link href="/training" className="focus-brutal">
               <Button variant="primary">Voltar ao Treinamento</Button>
             </Link>
           </div>
@@ -141,7 +141,7 @@ export default async function RsvpPreparationPage() {
             </div>
 
             <div className="flex justify-center space-x-4">
-              <Link href="/training">
+              <Link href="/training" className="focus-brutal">
                 <Button variant="secondary" className="px-8">
                   <ArrowLeftIcon className="h-4 w-4 mr-2" />
                   Voltar
@@ -149,6 +149,7 @@ export default async function RsvpPreparationPage() {
               </Link>
               <Link
                 href={`/training/rsvp/session?textId=${text.id}&targetWpm=${suggestedWpm}`}
+                className="focus-brutal"
               >
                 <Button variant="primary" className="px-8">
                   Começar Treino

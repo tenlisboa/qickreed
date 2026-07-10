@@ -120,7 +120,7 @@ export default async function AssessmentPage() {
         <div className="mt-8 text-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-black font-medium hover:underline transition-colors focus-brutal"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Voltar ao Dashboard
