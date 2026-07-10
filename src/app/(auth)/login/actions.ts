@@ -3,9 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import type { ActionResult } from "@/utils/actions/types";
+import { fail } from "@/utils/actions/types";
+import { mapAuthError } from "@/utils/auth/errors";
+import { getRequestLogger } from "@/utils/logging/request-logger";
 import { createClient } from "@/utils/supabase/server";
 
-export async function login(formData: FormData) {
+export async function login(
+  _prevState: ActionResult<null> | null,
+  formData: FormData,
+): Promise<ActionResult<null>> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -18,14 +25,20 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    const log = await getRequestLogger({ module: "login" });
+    log.warn({ err: error, email: data.email }, "Login failed");
+    const { code, message, details } = mapAuthError(error, "login");
+    return fail(code, message, details);
   }
 
   revalidatePath("/", "layout");
   redirect("/");
 }
 
-export async function signup(formData: FormData) {
+export async function signup(
+  _prevState: ActionResult<null> | null,
+  formData: FormData,
+): Promise<ActionResult<null>> {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -38,7 +51,10 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect("/error");
+    const log = await getRequestLogger({ module: "signup" });
+    log.warn({ err: error, email: data.email }, "Signup failed");
+    const { code, message, details } = mapAuthError(error, "signup");
+    return fail(code, message, details);
   }
 
   revalidatePath("/", "layout");
