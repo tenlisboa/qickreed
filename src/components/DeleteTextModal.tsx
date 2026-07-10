@@ -1,8 +1,17 @@
 "use client";
 
-import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { deleteText } from "@/app/(authenticated)/admin/texts/actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 
 interface DeleteTextModalProps {
   textId: string;
@@ -42,109 +51,60 @@ export default function DeleteTextModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <button
-        type="button"
-        className="fixed inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") onClose();
-        }}
-        aria-label="Close modal"
-      />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Deletar Texto</DialogTitle>
+          <DialogDescription>Esta ação não pode ser desfeita</DialogDescription>
+        </DialogHeader>
 
-      {/* Modal */}
-      <div className="relative bg-white border border-gray-200 shadow-lg rounded-lg max-w-md w-full mx-4">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
-              <TrashIcon className="h-6 w-6 text-red-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-black">
-                Deletar Texto
-              </h3>
-              <p className="text-sm text-gray-600">
-                Esta ação não pode ser desfeita
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-gray-400 hover:text-black transition-colors"
-          >
-            <XMarkIcon className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          <p className="text-gray-700 mb-4">
-            Tem certeza que deseja deletar o texto:
-          </p>
-          <div className="bg-gray-50 border border-gray-200 p-3 rounded-lg mb-6">
-            <p className="font-medium text-black">"{textTitle}"</p>
+        <div className="space-y-4">
+          <p className="text-black">Tem certeza que deseja deletar o texto:</p>
+          <div className="border-[3px] border-black bg-white p-3 rounded-base shadow-brutal-sm">
+            <p className="font-medium text-black">&quot;{textTitle}&quot;</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-              <div className="flex items-center">
-                <svg
-                  className="h-5 w-5 text-red-500 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <title>Error</title>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{error}</span>
-              </div>
+            <div
+              role="alert"
+              className="flex items-center gap-2 border-[3px] border-black bg-error px-4 py-3 rounded-base shadow-brutal-sm text-black"
+            >
+              <TrashIcon className="h-5 w-5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
-
-          {/* Actions */}
-          <div className="flex gap-3 justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-ghost text-black hover:bg-gray-100 border border-gray-300"
-              disabled={isDeleting}
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="btn bg-red-600 hover:bg-red-700 text-white border-none"
-              disabled={isDeleting}
-            >
-              {isDeleting ? (
-                <>
-                  <span className="loading loading-spinner loading-sm"></span>
-                  Deletando...
-                </>
-              ) : (
-                <>
-                  <TrashIcon className="h-4 w-4" />
-                  Deletar
-                </>
-              )}
-            </button>
-          </div>
         </div>
-      </div>
-    </div>
+
+        <DialogFooter className="gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isDeleting}
+            className="inline-flex items-center justify-center border-[3px] border-black bg-white px-4 py-2 text-sm font-medium text-black rounded-base shadow-brutal-sm transition-brutal hover:shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-brutal disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-2 border-[3px] border-black bg-error px-4 py-2 text-sm font-medium text-black rounded-base shadow-brutal-sm transition-brutal hover:shadow-brutal hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none focus-brutal disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isDeleting ? (
+              <>
+                <Spinner size="sm" />
+                Deletando...
+              </>
+            ) : (
+              <>
+                <TrashIcon className="h-4 w-4" />
+                Deletar
+              </>
+            )}
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
