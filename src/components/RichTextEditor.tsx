@@ -43,22 +43,22 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
       : 0;
 
     return (
-      <div className={`form-control ${className}`} ref={ref}>
+      <div className={`flex flex-col gap-2 ${className}`} ref={ref}>
         {label && (
-          <div className="label">
-            <span className="label-text text-black font-medium">
+          <div className="flex items-center justify-between">
+            <span className="text-black font-bold">
               {label}
               {required && " *"}
             </span>
             {showWordCount && (
-              <span className="label-text-alt text-gray-500">
+              <span className="text-sm font-medium text-black/70 border-[3px] border-black bg-main rounded-base px-2 py-0.5">
                 {wordCount} palavras
               </span>
             )}
           </div>
         )}
 
-        <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:border-black transition-colors">
+        <div className="border-[3px] border-black rounded-base overflow-hidden shadow-brutal-sm focus-within:shadow-brutal transition-brutal">
           <ReactQuill
             theme="snow"
             value={value || ""}
@@ -78,8 +78,11 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
         </div>
 
         {error && (
-          <div className="label">
-            <span className="label-text-alt text-error">{error}</span>
+          <div
+            role="alert"
+            className="border-[3px] border-black bg-error text-black rounded-base shadow-brutal-sm px-3 py-1 text-sm font-bold"
+          >
+            {error}
           </div>
         )}
       </div>

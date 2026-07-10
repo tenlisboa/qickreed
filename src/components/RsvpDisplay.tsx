@@ -129,16 +129,14 @@ export default function RsvpDisplay({
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col border-[3px] border-black">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b-[3px] border-black p-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-black">
-                Treinamento RSVP
-              </h1>
-              <div className="text-sm text-gray-600">
+              <h1 className="text-xl font-bold text-black">Treinamento RSVP</h1>
+              <div className="text-sm font-bold text-black border-[3px] border-black bg-main rounded-base px-2 py-1">
                 {currentWordIndex + 1} de {words.length} palavras
               </div>
             </div>
@@ -187,15 +185,15 @@ export default function RsvpDisplay({
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-gray-50 border-b border-gray-200">
+      <div className="bg-white border-b-[3px] border-black">
         <div className="max-w-4xl mx-auto p-4">
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full h-3 bg-white border-[3px] border-black rounded-base overflow-hidden">
             <div
-              className="bg-black h-2 rounded-full transition-all duration-300"
+              className="bg-main h-full transition-all duration-300"
               style={{ width: `${getProgress()}%` }}
             />
           </div>
-          <div className="flex justify-between text-sm text-gray-600 mt-2">
+          <div className="flex justify-between text-sm font-bold text-black mt-2">
             <span>Progresso: {Math.round(getProgress())}%</span>
             {isPlaying && (
               <span>
@@ -210,34 +208,36 @@ export default function RsvpDisplay({
       {/* Word Display */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center">
-          <div
-            className={`text-6xl font-bold text-black transition-all duration-200 ${
-              isPlaying ? "opacity-100" : "opacity-60"
-            }`}
-            style={{
-              fontFamily: "system-ui, -apple-system, sans-serif",
-              lineHeight: 1.2,
-            }}
-          >
-            {getCurrentWord()}
+          <div className="border-[3px] border-black bg-white rounded-base shadow-brutal-lg px-12 py-8">
+            <div
+              className={`text-6xl font-bold text-black transition-all duration-200 ${
+                isPlaying ? "opacity-100" : "opacity-60"
+              }`}
+              style={{
+                fontFamily: "system-ui, -apple-system, sans-serif",
+                lineHeight: 1.2,
+              }}
+            >
+              {getCurrentWord()}
+            </div>
           </div>
           {!isPlaying && !isPaused && (
-            <p className="text-gray-600 mt-8 text-lg">
-              Clique em "Iniciar" para começar o treinamento
+            <p className="text-black mt-8 text-lg font-medium">
+              Clique em &quot;Iniciar&quot; para começar o treinamento
             </p>
           )}
           {isPaused && (
-            <p className="text-gray-600 mt-8 text-lg">
-              Treinamento pausado. Clique em "Retomar" para continuar.
+            <p className="text-black mt-8 text-lg font-medium">
+              Treinamento pausado. Clique em &quot;Retomar&quot; para continuar.
             </p>
           )}
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="bg-gray-50 border-t border-gray-200 p-4">
+      <div className="bg-white border-t-[3px] border-black p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm font-bold text-black">
             <p>
               <strong>Instruções:</strong> Mantenha o foco na palavra central.
               Não subvocalize. O treinamento pausa automaticamente quando você
