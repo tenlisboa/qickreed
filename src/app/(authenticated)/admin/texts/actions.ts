@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { Text, TextType } from "@/types/database";
+import { getRequestLogger } from "@/utils/logging/request-logger";
+import { createClient } from "@/utils/supabase/server";
 
 export interface TextListParams {
   page?: number;
@@ -80,7 +80,7 @@ export async function getTextById(id: string): Promise<Text | null> {
 }
 
 export async function deleteText(
-  id: string
+  id: string,
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
@@ -142,7 +142,7 @@ export interface CreateTextData {
 }
 
 export async function createText(
-  data: CreateTextData
+  data: CreateTextData,
 ): Promise<{ success: boolean; error?: string; id?: string }> {
   const supabase = await createClient();
 
@@ -175,7 +175,7 @@ export interface UpdateTextData {
 
 export async function updateText(
   id: string,
-  data: UpdateTextData
+  data: UpdateTextData,
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 

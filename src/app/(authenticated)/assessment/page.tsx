@@ -1,13 +1,13 @@
-import { getUserDiagnosticHistory } from "./actions";
+import {
+  ArrowLeftIcon,
+  BookOpenIcon,
+  ChartBarIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import Link from "next/link";
-import {
-  BookOpenIcon,
-  QuestionMarkCircleIcon,
-  ChartBarIcon,
-  ArrowLeftIcon,
-} from "@heroicons/react/24/outline";
+import { getUserDiagnosticHistory } from "./actions";
 
 export default async function AssessmentPage() {
   const history = await getUserDiagnosticHistory();
@@ -97,7 +97,7 @@ export default async function AssessmentPage() {
                       </p>
                       <p className="text-sm text-gray-500">
                         {new Date(assessment.created_at).toLocaleDateString(
-                          "pt-BR"
+                          "pt-BR",
                         )}
                       </p>
                     </div>

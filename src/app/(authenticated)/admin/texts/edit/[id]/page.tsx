@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
-import { getTextById, updateText } from "../../actions";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import type { Text, TextType } from "@/types/database";
-import { type TextFormData } from "../../schemas";
-
+import { getTextById, updateText } from "../../actions";
 import TextForm from "../../components/TextForm";
+import type { TextFormData } from "../../schemas";
 
 interface EditTextPageProps {
   params: Promise<{
@@ -86,6 +85,7 @@ export default function EditTextPage({ params }: EditTextPageProps) {
             fill="none"
             viewBox="0 0 24 24"
           >
+            <title>Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -117,6 +117,7 @@ export default function EditTextPage({ params }: EditTextPageProps) {
             fill="none"
             viewBox="0 0 24 24"
           >
+            <title>Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

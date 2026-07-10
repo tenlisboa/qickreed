@@ -1,7 +1,7 @@
 "use client";
 
-import { forwardRef } from "react";
 import dynamic from "next/dynamic";
+import { forwardRef } from "react";
 
 // Import ReactQuill dynamically to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -32,7 +32,7 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
       required = false,
       className = "",
     },
-    ref
+    ref,
   ) => {
     // Calculate word count
     const wordCount = value
@@ -45,7 +45,7 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
     return (
       <div className={`form-control ${className}`} ref={ref}>
         {label && (
-          <label className="label">
+          <div className="label">
             <span className="label-text text-black font-medium">
               {label}
               {required && " *"}
@@ -55,7 +55,7 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
                 {wordCount} palavras
               </span>
             )}
-          </label>
+          </div>
         )}
 
         <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:border-black transition-colors">
@@ -78,13 +78,13 @@ const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(
         </div>
 
         {error && (
-          <label className="label">
+          <div className="label">
             <span className="label-text-alt text-error">{error}</span>
-          </label>
+          </div>
         )}
       </div>
     );
-  }
+  },
 );
 
 RichTextEditor.displayName = "RichTextEditor";

@@ -1,5 +1,4 @@
 import { checkAdminAccess } from "@/utils/auth/admin";
-import Sidebar from "@/components/Sidebar";
 
 export default async function AdminLayout({
   children,

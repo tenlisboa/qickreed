@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { saveDiagnosticSession } from "../actions";
+import { useCallback, useEffect, useState } from "react";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import QuizQuestion from "@/components/QuizQuestion";
-import type { Text, QuizData } from "@/types/database";
+import type { QuizData, Text } from "@/types/database";
+import { saveDiagnosticSession } from "../actions";
 
 interface QuizAnswers {
   [questionId: number]: number;
@@ -24,17 +24,7 @@ export default function QuizPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const textId = sessionStorage.getItem("textId");
-    if (!textId) {
-      router.push("/assessment");
-      return;
-    }
-
-    fetchText(textId);
-  }, [router]);
-
-  const fetchText = async (textId: string) => {
+  const fetchText = useCallback(async (textId: string) => {
     try {
       const data = await getTextById(textId);
 
@@ -50,12 +40,22 @@ export default function QuizPage() {
       } else {
         setError("Quiz não encontrado para este texto");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar texto");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const textId = sessionStorage.getItem("textId");
+    if (!textId) {
+      router.push("/assessment");
+      return;
+    }
+
+    fetchText(textId);
+  }, [router, fetchText]);
 
   const handleAnswer = (questionId: number, answerIndex: number) => {
     setAnswers((prev) => ({
@@ -98,7 +98,8 @@ export default function QuizPage() {
 
       // Get reading time from sessionStorage
       const readingTimeMs = parseInt(
-        sessionStorage.getItem("readingTimeMs") || "0"
+        sessionStorage.getItem("readingTimeMs") || "0",
+        10,
       );
       const textId = sessionStorage.getItem("textId");
 
@@ -111,7 +112,7 @@ export default function QuizPage() {
       const result = await saveDiagnosticSession(
         textId,
         readingTimeMs,
-        comprehensionScore
+        comprehensionScore,
       );
 
       if (result.error) {
@@ -125,7 +126,7 @@ export default function QuizPage() {
 
       // Redirect to results
       router.push("/assessment/results");
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao processar resultados");
     } finally {
       setIsSubmitting(false);
@@ -189,7 +190,7 @@ export default function QuizPage() {
             </span>
             <span className="text-sm text-gray-600">
               {Math.round(
-                ((currentQuestion + 1) / quizData.questions.length) * 100
+                ((currentQuestion + 1) / quizData.questions.length) * 100,
               )}
               %
             </span>

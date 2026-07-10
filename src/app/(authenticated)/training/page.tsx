@@ -1,14 +1,14 @@
-import { getTrainingHistory } from "./actions";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import Link from "next/link";
 import {
   AcademicCapIcon,
-  ArrowRightIcon,
-  ClockIcon,
-  ChartBarIcon,
   ArrowLeftIcon,
+  ArrowRightIcon,
+  ChartBarIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { getTrainingHistory } from "./actions";
 
 export default async function TrainingPage() {
   const history = await getTrainingHistory();
@@ -89,7 +89,7 @@ export default async function TrainingPage() {
                         </p>
                         <p className="text-sm text-gray-500">
                           {new Date(session.created_at).toLocaleDateString(
-                            "pt-BR"
+                            "pt-BR",
                           )}
                         </p>
                       </div>

@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import type { Text, TrainingHistory, TrainingType } from "@/types/database";
 import { getRequestLogger } from "@/utils/logging/request-logger";
-import type { TrainingHistory, Text, TrainingType } from "@/types/database";
+import { createClient } from "@/utils/supabase/server";
 
 export async function getTrainingHistory(): Promise<TrainingHistory[]> {
   const supabase = await createClient();
@@ -20,7 +20,7 @@ export async function getTrainingHistory(): Promise<TrainingHistory[]> {
       text:text_id (
         title
       )
-    `
+    `,
     )
     .order("created_at", { ascending: false });
 
@@ -64,7 +64,7 @@ export async function createTrainingSession(
   textId: string,
   trainingType: TrainingType,
   targetWpm: number,
-  durationSeconds: number
+  durationSeconds: number,
 ): Promise<string | null> {
   const supabase = await createClient();
 
@@ -109,7 +109,7 @@ export async function getLastDiagnosticWpm(): Promise<number | null> {
 }
 
 export async function getTrainingSessionById(
-  sessionId: string
+  sessionId: string,
 ): Promise<TrainingHistory | null> {
   const supabase = await createClient();
 
@@ -125,7 +125,7 @@ export async function getTrainingSessionById(
       text:text_id (
         title
       )
-    `
+    `,
     )
     .eq("id", sessionId)
     .single();

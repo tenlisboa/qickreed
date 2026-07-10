@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
-import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { DashboardData, UserAssessmentHistory } from "@/types/database";
+import { getRequestLogger } from "@/utils/logging/request-logger";
+import { createClient } from "@/utils/supabase/server";
 
 export async function getDashboardData(): Promise<DashboardData | null> {
   const supabase = await createClient();
@@ -26,7 +26,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       text:text_id (
         title
       )
-    `
+    `,
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
@@ -44,7 +44,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       text:text_id (
         title
       )
-    `
+    `,
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: true });

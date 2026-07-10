@@ -1,7 +1,7 @@
-import { createTrainingSession } from "../../actions";
+import { type NextRequest, NextResponse } from "next/server";
 import { TrainingType } from "@/types/database";
-import { NextRequest, NextResponse } from "next/server";
 import { getRequestLogger } from "@/utils/logging/request-logger";
+import { createTrainingSession } from "../../actions";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!textId || !targetWpm || !durationSeconds) {
       return NextResponse.json(
         { error: "Dados obrigatórios não fornecidos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -18,13 +18,13 @@ export async function POST(request: NextRequest) {
       textId,
       TrainingType.RSVP,
       targetWpm,
-      durationSeconds
+      durationSeconds,
     );
 
     if (!sessionId) {
       return NextResponse.json(
         { error: "Erro ao criar sessão de treinamento" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     log.error({ err: error }, "Failed to complete training session");
     return NextResponse.json(
       { error: "Erro interno do servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

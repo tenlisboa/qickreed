@@ -1,12 +1,12 @@
 "use client";
 
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { getTexts } from "./actions";
-import { Suspense, useState, useEffect, use } from "react";
-import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import DeleteTextModal from "@/components/DeleteTextModal";
-import { Text, TextType } from "@/types/database";
+import { use, useEffect, useState } from "react";
 import Button from "@/components/Button";
+import DeleteTextModal from "@/components/DeleteTextModal";
+import { type Text, TextType } from "@/types/database";
+import { getTexts } from "./actions";
 
 interface TextListPageProps {
   searchParams: Promise<{
@@ -71,6 +71,7 @@ function TextTable({
                     <PencilIcon className="h-4 w-4" />
                   </Link>
                   <button
+                    type="button"
                     className="btn btn-sm btn-ghost text-error hover:bg-red-50"
                     title="Deletar"
                     onClick={() => onDeleteClick(text)}
@@ -164,7 +165,7 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
     sort?: string;
     order?: "asc" | "desc";
   };
-  const page = parseInt(resolvedSearchParams.page || "1");
+  const page = parseInt(resolvedSearchParams.page || "1", 10);
   const search = resolvedSearchParams.search || "";
   const sort = resolvedSearchParams.sort || "created_at";
   const order = resolvedSearchParams.order || "desc";

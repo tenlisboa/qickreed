@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createText } from "../actions";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { type TextFormData } from "../schemas";
-import { TextType } from "@/types/database";
-
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { TextType } from "@/types/database";
+import { createText } from "../actions";
 import TextForm from "../components/TextForm";
+import type { TextFormData } from "../schemas";
 
 export default function CreateTextPage() {
   const router = useRouter();
@@ -55,6 +54,7 @@ export default function CreateTextPage() {
             fill="none"
             viewBox="0 0 24 24"
           >
+            <title>Error</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

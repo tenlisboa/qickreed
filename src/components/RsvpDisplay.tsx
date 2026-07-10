@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/outline";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
-import { PlayIcon, PauseIcon, StopIcon } from "@heroicons/react/24/outline";
 
 interface RsvpDisplayProps {
   text: string;
@@ -28,6 +28,23 @@ export default function RsvpDisplay({
   const words = text.split(/\s+/).filter((word) => word.length > 0);
   const wordInterval = Math.round(60000 / targetWpm); // ms per word
 
+  const handlePause = useCallback(() => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      setIsPaused(true);
+      setPausedTime(Date.now());
+    }
+  }, [isPlaying]);
+
+  const handleComplete = useCallback(() => {
+    setIsPlaying(false);
+    setIsPaused(false);
+    const now = Date.now();
+    const totalTime = startTime ? now - startTime - totalPausedTime : 0;
+    const durationSeconds = Math.floor(totalTime / 1000);
+    onComplete(durationSeconds);
+  }, [startTime, totalPausedTime, onComplete]);
+
   // Handle visibility change (pause when tab is not active)
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -40,7 +57,7 @@ export default function RsvpDisplay({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [isPlaying]);
+  }, [isPlaying, handlePause]);
 
   // Handle word progression
   useEffect(() => {
@@ -64,7 +81,14 @@ export default function RsvpDisplay({
         clearTimeout(intervalRef.current);
       }
     };
-  }, [isPlaying, isPaused, currentWordIndex, wordInterval, words.length]);
+  }, [
+    isPlaying,
+    isPaused,
+    currentWordIndex,
+    wordInterval,
+    words.length,
+    handleComplete,
+  ]);
 
   const handleStart = () => {
     if (!startTime) {
@@ -72,14 +96,6 @@ export default function RsvpDisplay({
     }
     setIsPlaying(true);
     setIsPaused(false);
-  };
-
-  const handlePause = () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      setIsPaused(true);
-      setPausedTime(Date.now());
-    }
   };
 
   const handleResume = () => {
@@ -95,15 +111,6 @@ export default function RsvpDisplay({
     setIsPlaying(false);
     setIsPaused(false);
     onStop();
-  };
-
-  const handleComplete = () => {
-    setIsPlaying(false);
-    setIsPaused(false);
-    const now = Date.now();
-    const totalTime = startTime ? now - startTime - totalPausedTime : 0;
-    const durationSeconds = Math.floor(totalTime / 1000);
-    onComplete(durationSeconds);
   };
 
   const getCurrentWord = () => {

@@ -61,6 +61,7 @@ export default function LoginPage() {
 
               {/* Login Button */}
               <button
+                type="submit"
                 formAction={login}
                 className="btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors"
               >

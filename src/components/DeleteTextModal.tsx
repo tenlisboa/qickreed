@@ -1,8 +1,8 @@
 "use client";
 
+import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { deleteText } from "@/app/(authenticated)/admin/texts/actions";
-import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface DeleteTextModalProps {
   textId: string;
@@ -35,7 +35,7 @@ export default function DeleteTextModal({
       } else {
         setError(result.error || "Erro ao deletar texto");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("Erro inesperado ao deletar texto");
     } finally {
       setIsDeleting(false);
@@ -47,7 +47,15 @@ export default function DeleteTextModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <button
+        type="button"
+        className="fixed inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
+        aria-label="Close modal"
+      />
 
       {/* Modal */}
       <div className="relative bg-white border border-gray-200 shadow-lg rounded-lg max-w-md w-full mx-4">
@@ -67,6 +75,7 @@ export default function DeleteTextModal({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-gray-400 hover:text-black transition-colors"
           >
@@ -92,6 +101,7 @@ export default function DeleteTextModal({
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
+                  <title>Error</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -107,6 +117,7 @@ export default function DeleteTextModal({
           {/* Actions */}
           <div className="flex gap-3 justify-end">
             <button
+              type="button"
               onClick={onClose}
               className="btn btn-ghost text-black hover:bg-gray-100 border border-gray-300"
               disabled={isDeleting}
@@ -114,6 +125,7 @@ export default function DeleteTextModal({
               Cancelar
             </button>
             <button
+              type="button"
               onClick={handleDelete}
               className="btn bg-red-600 hover:bg-red-700 text-white border-none"
               disabled={isDeleting}

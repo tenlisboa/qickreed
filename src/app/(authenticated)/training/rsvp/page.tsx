@@ -1,13 +1,13 @@
-import { getRandomTrainingText, getLastDiagnosticWpm } from "../actions";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import Link from "next/link";
 import {
   AcademicCapIcon,
   ArrowLeftIcon,
-  ClockIcon,
   ChartBarIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { getLastDiagnosticWpm, getRandomTrainingText } from "../actions";
 
 export default async function RsvpPreparationPage() {
   const [text, lastWpm] = await Promise.all([
@@ -94,9 +94,9 @@ export default async function RsvpPreparationPage() {
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <div className="block text-sm font-medium text-black mb-2">
                     Velocidade Sugerida: {suggestedWpm} PPM
-                  </label>
+                  </div>
                   <p className="text-sm text-gray-600 mb-4">
                     Baseado em seu último diagnóstico (
                     {lastWpm ? `${Math.round(lastWpm)} PPM` : "não disponível"})

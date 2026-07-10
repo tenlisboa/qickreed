@@ -1,19 +1,18 @@
 "use client";
 
+import {
+  AcademicCapIcon,
+  ArrowRightStartOnRectangleIcon,
+  DocumentIcon,
+  HomeIcon,
+  ShieldCheckIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import {
-  HomeIcon,
-  DocumentIcon,
-  UserIcon,
-  CogIcon,
-  ArrowRightStartOnRectangleIcon,
-  ShieldCheckIcon,
-  AcademicCapIcon,
-} from "@heroicons/react/24/outline";
-import { getUserRole } from "@/utils/auth/admin";
+import { useEffect, useState } from "react";
 import type { UserRole } from "@/types/database";
+import { getUserRole } from "@/utils/auth/admin";
 
 interface SidebarProps {
   className?: string;
@@ -81,6 +80,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
           <h1 className="text-xl font-bold text-black">QickReed</h1>
         )}
         <button
+          type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -148,6 +148,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
 
         {/* Logout Button */}
         <button
+          type="button"
           onClick={handleLogout}
           className={`
             flex items-center w-full px-3 py-2 text-sm font-medium text-gray-600 

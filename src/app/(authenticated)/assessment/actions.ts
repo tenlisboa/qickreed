@@ -1,16 +1,15 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getRequestLogger } from "@/utils/logging/request-logger";
-import { ok, fail } from "@/utils/actions/types";
 import type {
-  Text,
-  DiagnosticSession,
   AssessmentResult,
+  Text,
   UserAssessmentHistory,
 } from "@/types/database";
 import type { ActionResult } from "@/utils/actions/types";
+import { fail, ok } from "@/utils/actions/types";
+import { getRequestLogger } from "@/utils/logging/request-logger";
+import { createClient } from "@/utils/supabase/server";
 
 export async function getRandomDiagnosticText(): Promise<ActionResult<Text>> {
   const supabase = await createClient();
@@ -40,7 +39,7 @@ export async function getRandomDiagnosticText(): Promise<ActionResult<Text>> {
 export async function saveDiagnosticSession(
   textId: string,
   readingTimeMs: number,
-  comprehensionScore: number
+  comprehensionScore: number,
 ): Promise<ActionResult<AssessmentResult>> {
   const supabase = await createClient();
 
@@ -93,7 +92,7 @@ export async function saveDiagnosticSession(
     return fail(
       "db_error",
       "Não foi possível salvar a sessão de avaliação",
-      sessionError
+      sessionError,
     );
   }
 
@@ -132,7 +131,7 @@ export async function getUserDiagnosticHistory(): Promise<
       text:text_id (
         title
       )
-    `
+    `,
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
@@ -191,7 +190,7 @@ export async function getLatestDiagnosticSession(): Promise<AssessmentResult | n
       text:text_id (
         title
       )
-    `
+    `,
     )
     .order("created_at", { ascending: false })
     .limit(1)

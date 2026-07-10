@@ -1,13 +1,12 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { textSchema, type TextFormData } from "../schemas";
-import { TextType } from "@/types/database";
-
-import RichTextEditor from "@/components/RichTextEditor";
 import Button from "@/components/Button";
+import RichTextEditor from "@/components/RichTextEditor";
+import type { TextType } from "@/types/database";
+import { type TextFormData, textSchema } from "../schemas";
 
 interface TextFormProps {
   initialData?: Partial<TextFormData>;
@@ -83,6 +82,7 @@ export default function TextForm({
                 fill="none"
                 viewBox="0 0 24 24"
               >
+                <title>Error</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -109,11 +109,11 @@ export default function TextForm({
               placeholder="Digite o título do texto"
             />
             {errors.title && (
-              <label className="label">
+              <div className="label">
                 <span className="label-text-alt text-error">
                   {errors.title.message}
                 </span>
-              </label>
+              </div>
             )}
           </div>
 
@@ -132,11 +132,11 @@ export default function TextForm({
               <option value="training">Treinamento</option>
             </select>
             {errors.type && (
-              <label className="label">
+              <div className="label">
                 <span className="label-text-alt text-error">
                   {errors.type.message}
                 </span>
-              </label>
+              </div>
             )}
           </div>
 
@@ -153,11 +153,11 @@ export default function TextForm({
               placeholder="pt-BR"
             />
             {errors.language && (
-              <label className="label">
+              <div className="label">
                 <span className="label-text-alt text-error">
                   {errors.language.message}
                 </span>
-              </label>
+              </div>
             )}
           </div>
 

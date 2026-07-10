@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getRequestLogger } from "@/utils/logging/request-logger";
 import type { UserRole } from "@/types/database";
+import { getRequestLogger } from "@/utils/logging/request-logger";
+import { createClient } from "@/utils/supabase/server";
 
 export async function checkAdminAccess(): Promise<{
   user: any;

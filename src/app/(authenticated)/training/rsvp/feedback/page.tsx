@@ -1,20 +1,19 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  AcademicCapIcon,
+  ArrowRightIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  ClockIcon,
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import Link from "next/link";
-import { getTrainingSessionById } from "../../actions";
-import {
-  CheckCircleIcon,
-  ArrowRightIcon,
-  ClockIcon,
-  ChartBarIcon,
-  AcademicCapIcon,
-} from "@heroicons/react/24/outline";
-
 import type { TrainingHistory } from "@/types/database";
+import { getTrainingSessionById } from "../../actions";
 
 function RsvpFeedbackPageContent() {
   const [sessionData, setSessionData] = useState<TrainingHistory | null>(null);
@@ -25,16 +24,7 @@ function RsvpFeedbackPageContent() {
   const router = useRouter();
   const sessionId = searchParams.get("sessionId");
 
-  useEffect(() => {
-    if (!sessionId) {
-      router.push("/training");
-      return;
-    }
-
-    fetchSessionData();
-  }, [sessionId, router]);
-
-  const fetchSessionData = async () => {
+  const fetchSessionData = useCallback(async () => {
     try {
       const data = await getTrainingSessionById(sessionId!);
 
@@ -44,12 +34,21 @@ function RsvpFeedbackPageContent() {
       }
 
       setSessionData(data);
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar dados da sessão");
     } finally {
       setLoading(false);
     }
-  };
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (!sessionId) {
+      router.push("/training");
+      return;
+    }
+
+    fetchSessionData();
+  }, [sessionId, router, fetchSessionData]);
 
   const getMotivationalMessage = (wpm: number) => {
     if (wpm >= 400) {

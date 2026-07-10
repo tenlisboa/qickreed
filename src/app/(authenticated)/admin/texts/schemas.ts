@@ -1,5 +1,5 @@
-import { TextType } from "@/types/database";
 import { z } from "zod";
+import { TextType } from "@/types/database";
 
 export const textSchema = z.object({
   title: z

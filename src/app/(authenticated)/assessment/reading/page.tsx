@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import Timer from "@/components/Timer";
 import ScrollLockTextArea from "@/components/ScrollLockTextArea";
-import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
+import Timer from "@/components/Timer";
 import type { Text } from "@/types/database";
 
 function ReadingPageContent() {
@@ -21,16 +21,7 @@ function ReadingPageContent() {
   const router = useRouter();
   const textId = searchParams.get("textId");
 
-  useEffect(() => {
-    if (!textId) {
-      router.push("/assessment");
-      return;
-    }
-
-    fetchText();
-  }, [textId, router]);
-
-  const fetchText = async () => {
+  const fetchText = useCallback(async () => {
     try {
       const data = await getTextById(textId!);
 
@@ -40,12 +31,21 @@ function ReadingPageContent() {
       }
 
       setText(data);
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar texto");
     } finally {
       setLoading(false);
     }
-  };
+  }, [textId]);
+
+  useEffect(() => {
+    if (!textId) {
+      router.push("/assessment");
+      return;
+    }
+
+    fetchText();
+  }, [textId, router, fetchText]);
 
   const handleStartReading = () => {
     setIsReading(true);

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import RsvpDisplay from "@/components/RsvpDisplay";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
+import RsvpDisplay from "@/components/RsvpDisplay";
 import type { Text } from "@/types/database";
 
 function RsvpSessionPageContent() {
@@ -17,20 +17,7 @@ function RsvpSessionPageContent() {
   const textId = searchParams.get("textId");
   const targetWpmParam = searchParams.get("targetWpm");
 
-  useEffect(() => {
-    if (!textId) {
-      router.push("/training/rsvp");
-      return;
-    }
-
-    if (targetWpmParam) {
-      setTargetWpm(parseInt(targetWpmParam));
-    }
-
-    fetchText();
-  }, [textId, targetWpmParam, router]);
-
-  const fetchText = async () => {
+  const fetchText = useCallback(async () => {
     try {
       const data = await getTextById(textId!);
 
@@ -40,12 +27,25 @@ function RsvpSessionPageContent() {
       }
 
       setText(data);
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar texto");
     } finally {
       setLoading(false);
     }
-  };
+  }, [textId]);
+
+  useEffect(() => {
+    if (!textId) {
+      router.push("/training/rsvp");
+      return;
+    }
+
+    if (targetWpmParam) {
+      setTargetWpm(parseInt(targetWpmParam, 10));
+    }
+
+    fetchText();
+  }, [textId, targetWpmParam, router, fetchText]);
 
   const handleComplete = async (durationSeconds: number) => {
     if (!text) return;
@@ -98,6 +98,7 @@ function RsvpSessionPageContent() {
           </h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
+            type="button"
             onClick={() => router.push("/training")}
             className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
           >

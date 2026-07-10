@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import Link from "next/link";
-import { getLatestDiagnosticSession } from "../actions";
 import {
-  TagIcon,
+  ArrowLeftIcon,
   BookOpenIcon,
   RocketLaunchIcon,
-  ArrowLeftIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
 import type { AssessmentResult } from "@/types/database";
+import { getLatestDiagnosticSession } from "../actions";
 
 export default function ResultsPage() {
   const [results, setResults] = useState<AssessmentResult | null>(null);
@@ -21,11 +21,7 @@ export default function ResultsPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetchLatestResults();
-  }, []);
-
-  const fetchLatestResults = async () => {
+  const fetchLatestResults = useCallback(async () => {
     try {
       const data = await getLatestDiagnosticSession();
 
@@ -35,12 +31,16 @@ export default function ResultsPage() {
       }
 
       setResults(data);
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar resultados");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchLatestResults();
+  }, [fetchLatestResults]);
 
   const getWpmLevel = (wpm: number) => {
     if (wpm < 200)

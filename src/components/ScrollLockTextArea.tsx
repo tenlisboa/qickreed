@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import DOMPurify from "dompurify";
+import { useEffect, useRef } from "react";
 
 interface ScrollLockTextAreaProps {
   content: string;
@@ -103,11 +103,11 @@ export default function ScrollLockTextArea({
     <div
       ref={textAreaRef}
       className={`overflow-y-auto max-h-96 border border-gray-300 rounded-lg p-6 bg-white focus:outline-none focus:border-black ${className}`}
-      tabIndex={0}
       style={{ scrollBehavior: "smooth" }}
     >
       <div
         className="prose prose-sm max-w-none text-black leading-relaxed"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized with DOMPurify
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
     </div>

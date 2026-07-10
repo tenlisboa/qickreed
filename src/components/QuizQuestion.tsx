@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { QuizQuestion as QuizQuestionType } from "@/types/database";
 
 interface QuizQuestionProps {
@@ -29,7 +28,7 @@ export default function QuizQuestion({
       <div className="space-y-3">
         {question.options.map((option, index) => (
           <label
-            key={index}
+            key={option}
             className={`
               flex items-center p-4 border rounded-lg cursor-pointer transition-colors
               ${

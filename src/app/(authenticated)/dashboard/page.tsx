@@ -1,45 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
+import { BookOpenIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
-import { BookOpenIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
-import { getDashboardData } from "./actions";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
 import type { DashboardData } from "@/types/database";
+import { getDashboardData } from "./actions";
 
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const _router = useRouter();
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       const data = await getDashboardData();
       setDashboardData(data);
-    } catch (err) {
+    } catch (_err) {
       setError("Erro ao carregar dados do dashboard");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const getWpmLevel = (wpm: number) => {
     if (wpm < 200)
@@ -120,7 +120,7 @@ export default function DashboardPage() {
 
   const wpmLevel = getWpmLevel(dashboardData.current_wpm);
   const comprehensionLevel = getComprehensionLevel(
-    dashboardData.current_comprehension
+    dashboardData.current_comprehension,
   );
 
   // Format data for chart
