@@ -3,15 +3,15 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-base border-2 border-black p-4 shadow-brutal [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-black",
+  "relative w-full rounded-base border-[3px] border-black p-4 shadow-brutal [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-black",
   {
     variants: {
       variant: {
         default: "bg-main text-black",
         neutral: "bg-white text-black",
-        destructive: "bg-hot-pink text-black",
-        success: "bg-mint text-black",
-        warning: "bg-lemon text-black",
+        error: "bg-error text-black",
+        success: "bg-white text-black",
+        warning: "bg-main text-black",
       },
     },
     defaultVariants: {
@@ -87,7 +87,7 @@ function WarningIcon(props: React.SVGProps<SVGSVGElement>) {
 const variantIcons = {
   default: InfoIcon,
   neutral: InfoIcon,
-  destructive: ErrorIcon,
+  error: ErrorIcon,
   success: SuccessIcon,
   warning: WarningIcon,
 };

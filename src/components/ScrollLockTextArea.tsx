@@ -102,7 +102,7 @@ export default function ScrollLockTextArea({
   return (
     <div
       ref={textAreaRef}
-      className={`overflow-y-auto max-h-96 border border-gray-300 rounded-lg p-6 bg-white focus:outline-none focus:border-black ${className}`}
+      className={`overflow-y-auto max-h-96 rounded-base border-[3px] border-black p-6 bg-white text-black focus-brutal ${className}`}
       style={{ scrollBehavior: "smooth" }}
     >
       <div
