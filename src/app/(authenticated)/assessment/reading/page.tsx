@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import Card from "@/components/Card";
 import ScrollLockTextArea from "@/components/ScrollLockTextArea";
 import Timer from "@/components/Timer";
+import { Spinner } from "@/components/ui/spinner";
 import type { Text } from "@/types/database";
 
 function ReadingPageContent() {
@@ -68,7 +69,7 @@ function ReadingPageContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4 block" />
           <p className="text-gray-600">Carregando texto...</p>
         </div>
       </div>
@@ -152,8 +153,8 @@ function ReadingPageContent() {
 
         {/* Instructions */}
         <div className="mt-8 text-center">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-2xl mx-auto">
-            <h3 className="font-medium text-black mb-2">
+          <div className="bg-white border-[3px] border-black rounded-base shadow-brutal-sm p-4 max-w-2xl mx-auto">
+            <h3 className="font-bold text-black mb-2">
               Instruções importantes:
             </h3>
             <ul className="text-sm text-gray-600 space-y-1">
@@ -175,7 +176,7 @@ export default function ReadingPage() {
       fallback={
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+            <Spinner size="lg" className="mx-auto mb-4 block" />
             <p className="text-gray-600">Carregando texto...</p>
           </div>
         </div>

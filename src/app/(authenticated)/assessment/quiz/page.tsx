@@ -6,6 +6,7 @@ import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import QuizQuestion from "@/components/QuizQuestion";
+import { Spinner } from "@/components/ui/spinner";
 import type { QuizData, Text } from "@/types/database";
 import { saveDiagnosticSession } from "../actions";
 
@@ -137,7 +138,7 @@ export default function QuizPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4 block" />
           <p className="text-gray-600">Carregando quiz...</p>
         </div>
       </div>
@@ -195,9 +196,9 @@ export default function QuizPage() {
               %
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-white border-[3px] border-black rounded-base h-3 overflow-hidden">
             <div
-              className="bg-black h-2 rounded-full transition-all duration-300"
+              className="bg-main h-full transition-all duration-300"
               style={{
                 width: `${
                   ((currentQuestion + 1) / quizData.questions.length) * 100
@@ -235,7 +236,7 @@ export default function QuizPage() {
               >
                 {isSubmitting ? (
                   <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <Spinner size="sm" className="mr-2" />
                     Processando...
                   </div>
                 ) : isLastQuestion ? (
@@ -250,8 +251,8 @@ export default function QuizPage() {
 
         {/* Instructions */}
         <div className="mt-8 text-center">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-2xl mx-auto">
-            <h3 className="font-medium text-black mb-2">Instruções:</h3>
+          <div className="bg-white border-[3px] border-black rounded-base shadow-brutal-sm p-4 max-w-2xl mx-auto">
+            <h3 className="font-bold text-black mb-2">Instruções:</h3>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• Leia cada pergunta cuidadosamente</li>
               <li>• Escolha a resposta que melhor se aplica</li>

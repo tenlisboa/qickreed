@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
+import { Spinner } from "@/components/ui/spinner";
 import type { AssessmentResult } from "@/types/database";
 import { getLatestDiagnosticSession } from "../actions";
 
@@ -72,7 +73,7 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4 block" />
           <p className="text-gray-600">Carregando resultados...</p>
         </div>
       </div>
@@ -128,7 +129,7 @@ export default function ResultsPage() {
                 <div className="text-sm text-gray-600">Palavras por Minuto</div>
               </div>
               <div
-                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${wpmLevel.bg} ${wpmLevel.color}`}
+                className={`inline-flex items-center px-3 py-1 rounded-base text-sm font-bold border-[3px] border-black shadow-brutal-sm ${wpmLevel.bg} ${wpmLevel.color}`}
               >
                 {wpmLevel.level}
               </div>
@@ -145,7 +146,7 @@ export default function ResultsPage() {
                 <div className="text-sm text-gray-600">Compreensão</div>
               </div>
               <div
-                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${comprehensionLevel.bg} ${comprehensionLevel.color}`}
+                className={`inline-flex items-center px-3 py-1 rounded-base text-sm font-bold border-[3px] border-black shadow-brutal-sm ${comprehensionLevel.bg} ${comprehensionLevel.color}`}
               >
                 {comprehensionLevel.level}
               </div>
