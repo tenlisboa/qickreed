@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 QickReed is a speed-reading trainer. Users take a diagnostic reading assessment (WPM + comprehension) to establish a baseline, then train with RSVP (Rapid Serial Visual Presentation) to increase reading speed.
 
-Stack: Next.js 15 (App Router, Turbopack) + React 19 + TypeScript + Supabase (Postgres + auth), Tailwind CSS v4 + DaisyUI, Biome for lint/format, **pnpm** as package manager.
+Stack: Next.js 15 (App Router, Turbopack) + React 19 + TypeScript + Supabase (Postgres + auth), Tailwind CSS v4, Biome for lint/format, **pnpm** as package manager.
 
 ## Commands
 
@@ -64,9 +64,13 @@ Schema lives in `supabase/migrations/`; TS mirrors in `src/types/database.ts` (e
 RLS is enabled on every table: authenticated users read all `text`; users read/insert only their own sessions; admin text management is gated by `is_admin()`.
 
 <important if="you are building or modifying UI, screens, or components">
-Styling is a strict **monochromatic** design system — black/white/gray only, no color accents. Use Tailwind CSS v4 + DaisyUI component classes (not hand-rolled CSS), and Heroicons for icons. Follow the full spec in `agent_docs/ui-ux_guidelines.mdc` for card/input/button class conventions, the DaisyUI component list, and focus/hover/transition classes.
+Styling is a **neobrutalism** design system (decision AD-005 in `.specs/STATE.md`). The visual language: thick **3px solid black borders**, **hard zero-blur offset shadows** (`--shadow-brutal` / `-sm` / `-lg`), **square corners** (`--radius: 0`), flat fills, and **physical hover/active** interactions (element shifts toward the shadow on hover; on active the shadow offset collapses to 0 and the element translates by the offset). Bold everywhere — including the RSVP training and assessment reading surfaces.
 
-Accessibility: every input needs an associated `<label htmlFor>`, `required` where applicable, and a visible focus state. Mobile-first; use Tailwind responsive prefixes.
+Palette: monochrome black/white/gray base **plus two accents** — `#FFD23F` (yellow, `--main`: primary actions, highlights, active states) and `#FF6B6B` (red, `--error`: error states only). Text on either accent is always **black** (both pass WCAG AA). Success is **non-color**: icon + pt-BR text + thick black border (no green). Never use white-on-accent.
+
+Components come from **neobrutal-ui** (copied into `src/components/ui/*` via CLI: button, card, input, textarea, label, checkbox, badge, alert, dialog) plus **hand-rolled primitives** (`src/components/ui/{select,radio,spinner,table,join,divider,form-control}.tsx`), all themed via the token system in `src/app/globals.css` (`:root` CSS vars + `@theme inline` Tailwind mapping). Existing wrappers (`src/components/{Button,Card,ScrollLockTextArea,QuizQuestion,DeleteTextModal,Sidebar,Timer,RsvpDisplay,RichTextEditor}.tsx`) delegate to these primitives — prefer the wrappers so call sites stay stable. Use Heroicons for icons. DaisyUI is fully removed — do not reintroduce it or any DaisyUI component class. Follow the full conventions in `agent_docs/ui-ux_guidelines.mdc` for token + class patterns.
+
+Accessibility: every input needs an associated `<label htmlFor>`, `required` where applicable, and a visible focus state (the `focus-brutal` utility provides a 3px solid black `focus-visible` outline). Mobile-first; use Tailwind responsive prefixes. Meet WCAG AA contrast.
 </important>
 
 <important if="you are working on the assessment or RSVP training logic">

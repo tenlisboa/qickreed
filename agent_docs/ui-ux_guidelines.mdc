@@ -7,29 +7,59 @@ alwaysApply: false
 
 ## Design Philosophy
 
-QickReed follows a **minimalist, monochromatic design** approach with these core principles:
+QickReed uses a **neobrutalism** design system (decision AD-005 in `.specs/STATE.md`). Core principles:
 
-1. **Minimalism First**: Clean, uncluttered interfaces focused on functionality
-2. **Monochromatic Elegance**: Black, white, and gray color palette for timeless appeal
-3. **User-Centered Design**: Every element serves a clear purpose
-4. **Accessibility**: Inclusive design that works for all users
-5. **Consistency**: Uniform patterns across all interfaces
+1. **Bold everywhere**: thick black borders, hard shadows, square corners on every surface — including RSVP training and assessment reading screens.
+2. **Physical interactions**: elements shift toward their shadow on hover and collapse the offset on active (translate + shadow-to-zero).
+3. **Flat fills, no gradients, no blur**: solid backgrounds; shadows are hard offsets (`Npx Npx 0 0 #000`), never blurred.
+4. **Two-accent palette**: monochrome base + `#FFD23F` (yellow) and `#FF6B6B` (red, errors only). Success is non-color.
+5. **Accessibility**: inclusive design that works for all users (WCAG AA, visible focus, keyboard nav).
+
+DaisyUI is fully removed. Do not reintroduce it or use any DaisyUI component class.
+
+## Token System (`src/app/globals.css`)
+
+All styling is driven by centralized CSS variables so dark mode stays achievable by swapping `:root` values only. Do not hard-code hex colors in components — consume tokens.
+
+```css
+:root {
+  --black: #000000;     /* text + borders */
+  --white: #ffffff;     /* component backgrounds */
+  --bg: #ffffff;        /* page background */
+  --main: #ffd23f;      /* accent 1: primary / highlights / active */
+  --error: #ff6b6b;     /* accent 2: error states only */
+  --radius: 0;          /* square corners */
+
+  /* hard offset shadows, zero blur */
+  --shadow-brutal: 4px 4px 0px 0px var(--black);
+  --shadow-brutal-sm: 3px 3px 0px 0px var(--black);
+  --shadow-brutal-lg: 6px 6px 0px 0px var(--black);
+}
+```
+
+`@theme inline` maps these to Tailwind tokens: `--color-main`, `--color-error`, `--color-bg`, `--radius-brutal` / `--radius-base`, `--shadow-brutal` / `-sm` / `-lg`, plus the Geist font vars. Gray scales (`--color-primary-*`, `--color-secondary-*`, `--color-neutral-*`) remain for text/border utility classes.
+
+Two structural utilities (defined in `globals.css`):
+
+- `focus-brutal` — `&:focus-visible { outline: 3px solid var(--black); outline-offset: 2px; }`
+- `transition-brutal` — `transition-property: transform, box-shadow; 150ms ease-in-out`
 
 ## Color Palette
 
-```css
-/* Primary Colors */
---primary-white: #ffffff     /* Backgrounds, cards */
---primary-black: #000000     /* Text, buttons, borders */
---dark-gray: #171717         /* Dark theme text */
---medium-gray: #6b7280       /* Secondary text */
---light-gray: #d1d5db        /* Borders, dividers */
---background-gray: #f9fafb   /* Alternative backgrounds */
-```
+| Token | Value | Use |
+| --- | --- | --- |
+| `--black` | `#000000` | Text, 3px borders, shadow color |
+| `--white` | `#ffffff` | Component/page backgrounds |
+| `--bg` | `#ffffff` | Page background |
+| `--main` | `#ffd23f` | Primary actions, highlights, active nav, active states |
+| `--error` | `#ff6b6b` | Error alerts/fills only |
+| grays (`primary-*`/`neutral-*`) | various | Secondary text, subtle borders |
+
+**Text on accents is always black** (`#FFD23F` ≈ 17:1, `#FF6B6B` ≈ 7.8:1 — both pass AA). Never white-on-accent. **Success has no color** — convey it with an icon + pt-BR text + thick black border (WCAG: not color-only). No green.
 
 ## Typography
 
-**Font Stack**: Geist Sans (primary), system fonts fallback
+**Font Stack**: Geist Sans (primary), system fonts fallback.
 
 ```css
 font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -46,198 +76,174 @@ font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe U
 - **Small**: `text-sm` (14px, 400 weight, medium gray)
 - **Extra Small**: `text-xs` (12px, 400 weight, light gray)
 
-## Component Standards
+## Components
+
+Components live in two places:
+
+- **neobrutal-ui primitives** (copied via CLI, owned source): `src/components/ui/{button,card,input,textarea,label,checkbox,badge,alert,dialog}.tsx` — themed via `:root` vars, CVA variants.
+- **Hand-rolled primitives** (token-driven): `src/components/ui/{select,radio,spinner,table,join,divider,form-control}.tsx`.
+
+**Prefer the shared wrappers** in `src/components/` (`Button.tsx`, `Card.tsx`, `ScrollLockTextArea.tsx`, `QuizQuestion.tsx`, `DeleteTextModal.tsx`, `Sidebar.tsx`, `Timer.tsx`, `RsvpDisplay.tsx`, `RichTextEditor.tsx`) — they delegate to the primitives and preserve stable call-site APIs.
+
+Icons: Heroicons.
 
 ### Cards
 
 ```tsx
-<div className="card bg-white border border-gray-200 shadow-lg">
-  <div className="card-body p-8">{/* Content */}</div>
-</div>
+<Card shadow="md" padding="p-6">
+  {/* content — shadow prop maps to --shadow-brutal-sm/-/-lg */}
+</Card>
 ```
 
-### Icons
+Renders: 3px black border, square corners, hard offset shadow, white fill.
 
-We use the Heroicons library for icons.
+### Buttons
 
 ```tsx
-<Icon name="icon-name" className="text-black" />
+<Button variant="primary" size="md">Save</Button>
+<Button variant="secondary" size="md">Cancel</Button>
+<Button variant="outline" size="sm">Details</Button>
 ```
 
-### Form Elements
+- `primary` — `--main` yellow fill + black text + 3px black border + hard shadow.
+- `secondary` — white fill + 3px black border + hard shadow.
+- `outline` — transparent, hover/active bg-black/5|10.
+- Hover: shift toward shadow (or shadow shrinks to `-sm`). Active: offset collapses + `translate-x/y` by the offset.
 
-### Input Fields
+### Input / Textarea / Select
 
 ```tsx
-<input
-  className="input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0"
-  placeholder="Enter your email"
-/>
+<Input className="w-full" placeholder="email@example.com" />
+<Textarea className="w-full" />
+<Select>...</Select>  {/* native <select>, 3px border + shadow-brutal-sm + focus-brutal */}
 ```
 
-### Labels
+3px black border, square corners, white flat fill, black text, `focus-brutal` outline.
+
+### Labels / Form Control
 
 ```tsx
-<label className="label" htmlFor="email">
-  <span className="label-text text-black font-medium">Email</span>
-</label>
+<FormControl>
+  <Label htmlFor="email">Email</Label>
+  <Input id="email" />
+</FormControl>
 ```
 
-### Primary Button
+`FormControl` = `flex flex-col gap-2`. `Label` passes `htmlFor` through to the native `<label>`.
+
+### Alert (error / success)
 
 ```tsx
-<button className="btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors">
-  Sign In
-</button>
+<Alert variant="error">Mensagem de erro em pt-BR</Alert>
+<Alert variant="success">Operação concluída</Alert>
 ```
 
-### Secondary Button (Links)
+- `error` — `--error` red fill + black text + 3px black border + hard shadow.
+- `success` — white fill, check icon, pt-BR text, thick black border (no green).
+
+### Badge
 
 ```tsx
-<Link href="/signup" className="text-black font-medium hover:underline">
-  Sign up
-</Link>
+<Badge>active</Badge>
 ```
 
-### Layout Components
+3px black border, square, flat fill.
 
-### Page Container
+### Checkbox / Radio
 
 ```tsx
-<div className="min-h-screen bg-white flex items-center justify-center px-4">
-  <div className="w-full max-w-md">{/* Content */}</div>
-</div>
+<Checkbox id="terms" />          {/* neobrutal-ui Checkbox (Base UI) */}
+<Radio id="opt1" name="quiz" />  {/* native, appearance-none, checked:bg-black */}
 ```
 
-### Brand Section
+Native `radio` is hand-rolled (single usage in `QuizQuestion.tsx`).
+
+### Spinner (loading)
 
 ```tsx
-<div className="text-center mb-8">
-  <h1 className="text-3xl font-bold text-black">QickReed</h1>
-  <p className="text-gray-600 mt-2">Sign in to your account</p>
-</div>
+<Spinner size="md" />  {/* border-[3px] border-black border-r-transparent animate-spin, aria-hidden */}
 ```
 
-### Spacing System
+### Table
+
+```tsx
+<Table>
+  <TableHeader>...</TableHeader>
+  <TableBody>...</TableBody>
+</Table>
+```
+
+`border-collapse`, 3px black cell borders, square.
+
+### Dialog (modal)
+
+```tsx
+<Dialog>...</Dialog>  {/* neobrutal-ui Dialog: square, 3px border, hard shadow */}
+```
+
+### Join / Divider
+
+```tsx
+<Join><Button>Prev</Button><Button>Next</Button></Join>
+<Divider>or</Divider>
+```
+
+`Join` shares inner borders (`-ml-[3px]` on inner items). `Divider` = 3px black rule, optional label.
+
+## Interactive States
+
+### Focus
+
+Use the `focus-brutal` utility (3px solid black `focus-visible` outline, 2px offset) on every interactive element. Do not rely on color alone.
+
+### Hover / Active (physical)
+
+- **Hover**: element shifts toward the shadow (e.g. `hover:shadow-brutal-sm`) or the shadow shrinks.
+- **Active**: shadow offset collapses to `0 0 0 #000` and the element `translate-x/y` by the original offset.
+- Use the `transition-brutal` utility (`transform, box-shadow`, 150ms) for the motion.
+
+## Spacing System
 
 Use Tailwind's spacing scale consistently:
 
 - **Form fields**: `space-y-6` (1.5rem vertical spacing)
-- **Card padding**: `p-8` (2rem)
+- **Card padding**: `p-6`–`p-8` (1.5–2rem)
 - **Section margins**: `mb-8`, `mt-8` (2rem)
 - **Element spacing**: `mt-2` (0.5rem)
 
-### Interactive States
+## Tailwind CSS Standards
 
-### Focus States
-
-```css
-.focus\:border-black:focus {
-  border-color: #000000;
-  outline: none;
-}
-```
-
-### Hover States
-
-```css
-.hover\:bg-gray-800:hover {
-  background-color: #1f2937;
-}
-.hover\:underline:hover {
-  text-decoration: underline;
-}
-```
-
-### Transitions
-
-```css
-.transition-colors {
-  transition: color 150ms ease-in-out, background-color 150ms ease-in-out;
-}
-```
-
-### Accessibility Guidelines
-
-1. **Form Accessibility**: Every form field must have an associated label using `htmlFor`
-2. **Required Fields**: Use the `required` attribute for mandatory fields
-3. **Focus Indicators**: All interactive elements must have visible focus states
-4. **Color Contrast**: All text must meet WCAG AA contrast requirements
-5. **Keyboard Navigation**: Logical tab order through interactive elements
-
-## Tailwind CSS & DaisyUI Standards
-
-### DaisyUI Components Used
-
-- `card`, `card-body`: Container components
-- `input`, `input-bordered`: Form inputs
-- `btn`, `btn-block`: Buttons
-- `form-control`, `label`, `label-text`: Form structure
-- `divider`: Visual separators
-
-### Tailwind Class Patterns
-
-**Layout**:
-
-```tsx
-className = "min-h-screen bg-white flex items-center justify-center px-4";
-```
-
-**Typography**:
-
-```tsx
-className = "text-3xl font-bold text-black";
-className = "text-gray-600 mt-2";
-```
-
-**Interactive Elements**:
-
-```tsx
-className =
-  "btn btn-block bg-black hover:bg-gray-800 text-white border-none transition-colors";
-```
-
-**Form Elements**:
-
-```tsx
-className =
-  "input input-bordered w-full bg-white border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0";
-```
+- **No DaisyUI** — do not use `btn`, `card`, `card-body`, `input-bordered`, `select-bordered`, `label-text`, `form-control` (as a class), `alert-error`, `modal-box`, `loading-spinner`, `join`, `divider`, `badge`, `range`, `tab`, etc. Use the primitives/wrappers above instead.
+- **Border**: `border-[3px] border-black rounded-none` (or the primitives, which apply this).
+- **Shadow**: `shadow-brutal` / `shadow-brutal-sm` / `shadow-brutal-lg` (hard offset, zero blur) — never Tailwind's blurred `shadow-sm/md/lg` for primary surfaces.
+- **Accent fills**: `bg-main text-black` / `bg-error text-black`.
 
 ### Responsive Design
 
 - **Mobile First**: Start with mobile styles
 - **Breakpoints**: Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`)
 - **Container**: Max width `max-w-md` for forms, `max-w-4xl` for content
+- **Tap targets**: ≥44px on mobile
+
+## Accessibility Guidelines
+
+1. **Form Accessibility**: Every form field must have an associated label using `htmlFor`
+2. **Required Fields**: Use the `required` attribute for mandatory fields
+3. **Focus Indicators**: All interactive elements must have a visible `focus-brutal` state (WCAG 2.4.7)
+4. **Color Contrast**: All text must meet WCAG AA — black text on `#FFD23F` (≈17:1) and `#FF6B6B` (≈7.8:1); never white-on-accent
+5. **Keyboard Navigation**: Logical tab order through interactive elements
+6. **Success not color-only**: convey success with icon + pt-BR text + border, not a green fill
 
 ## Future Considerations
 
 ### Dark Mode Support
 
-The foundation is prepared for dark mode implementation:
+Tokens are centralized in `:root` — a future dark palette is achievable by swapping `:root` values only (no per-component hard-coded colors). Not implemented yet.
 
-```css
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-```
+### Component Expansion
 
-### Component Library Expansion
-
-As the application grows, consider creating:
-
-- Navigation components
-- Dashboard cards
-- Data tables
-- Modal dialogs
-- Loading states
-- Error states
-
-All future components should adhere to the established design principles and color palette outlined in this document.
+New components should be added as neobrutal-ui primitives (via `npx neobrutal add <name>`) or hand-rolled token-driven primitives under `src/components/ui/`, and consumed through a wrapper in `src/components/` when reused across pages. All must follow the token system and accessibility requirements above.
 
 ---
 
-_This document serves as the foundation for all development in QickReed. Any deviations from these guidelines should be documented and approved by the development team._
+_This document defines the neobrutalism design system for all development in QickReed (AD-005). Any deviations should be documented and approved._
