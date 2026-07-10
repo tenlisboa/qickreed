@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Card as NBCard } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface CardProps {
   children: ReactNode;
@@ -7,29 +9,30 @@ interface CardProps {
   padding?: "sm" | "md" | "lg";
 }
 
+const shadowMap = {
+  sm: "sm",
+  md: "md",
+  lg: "lg",
+} as const;
+
+const paddingClasses = {
+  sm: "p-4",
+  md: "p-6",
+  lg: "p-8",
+};
+
 export default function Card({
   children,
   className = "",
   shadow = "lg",
   padding = "md",
 }: CardProps) {
-  const baseClasses = "card bg-white border border-gray-200";
-
-  const shadowClasses = {
-    sm: "shadow-sm",
-    md: "shadow-md",
-    lg: "shadow-lg",
-  };
-
-  const paddingClasses = {
-    sm: "p-4",
-    md: "p-6",
-    lg: "p-8",
-  };
-
   return (
-    <div className={`${baseClasses} ${shadowClasses[shadow]} ${className}`}>
-      <div className={`card-body ${paddingClasses[padding]}`}>{children}</div>
-    </div>
+    <NBCard
+      shadow={shadowMap[shadow]}
+      className={cn(paddingClasses[padding], className)}
+    >
+      {children}
+    </NBCard>
   );
 }

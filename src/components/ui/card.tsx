@@ -3,15 +3,22 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
-  "rounded-base border-2 border-black bg-white text-black shadow-brutal",
+  "rounded-base border-[3px] border-black bg-white text-black",
   {
     variants: {
       variant: {
         default: "",
       },
+      shadow: {
+        none: "",
+        sm: "shadow-brutal-sm",
+        md: "shadow-brutal",
+        lg: "shadow-brutal-lg",
+      },
     },
     defaultVariants: {
       variant: "default",
+      shadow: "md",
     },
   },
 );
@@ -20,10 +27,10 @@ export type CardProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof cardVariants>;
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, ...props }, ref) => (
+  ({ className, variant, shadow, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(cardVariants({ variant }), "p-4", className)}
+      className={cn(cardVariants({ variant, shadow }), "p-4", className)}
       {...props}
     />
   ),
