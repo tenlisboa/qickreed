@@ -1,13 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { useActionState } from "react";
 import { signup } from "@/app/(auth)/login/actions";
-import Button from "@/components/Button";
 import Card from "@/components/Card";
+import SubmitButton from "@/components/SubmitButton";
+import { Alert } from "@/components/ui/alert";
 import { Divider } from "@/components/ui/divider";
 import { FormControl } from "@/components/ui/form-control";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
+  const [state, formAction] = useActionState(signup, null);
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -19,7 +25,12 @@ export default function SignupPage() {
 
         {/* Signup Form Card */}
         <Card shadow="md" padding="lg">
-          <form className="space-y-6">
+          <form action={formAction} className="space-y-6">
+            {/* Inline error */}
+            {state?.error ? (
+              <Alert variant="error">{state.error.message}</Alert>
+            ) : null}
+
             {/* Email Input */}
             <FormControl>
               <Label htmlFor="email">Email</Label>
@@ -87,14 +98,13 @@ export default function SignupPage() {
             </FormControl>
 
             {/* Signup Button */}
-            <Button
-              type="submit"
-              formAction={signup}
+            <SubmitButton
               variant="primary"
               className="w-full"
+              pendingLabel="Criando conta…"
             >
               Create Account
-            </Button>
+            </SubmitButton>
           </form>
 
           {/* Divider */}
