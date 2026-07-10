@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Button as NBButton } from "@/components/ui/button";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -7,6 +8,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
 }
 
+const variantMap = {
+  primary: "default",
+  secondary: "neutral",
+  outline: "outline",
+} as const;
+
+const sizeMap = {
+  sm: "sm",
+  md: "default",
+  lg: "lg",
+} as const;
+
 export default function Button({
   children,
   variant = "primary",
@@ -14,27 +27,14 @@ export default function Button({
   className = "",
   ...props
 }: ButtonProps) {
-  const baseClasses = "btn transition-colors border-none font-medium";
-
-  const variantClasses = {
-    primary: "bg-black hover:bg-gray-800 text-white",
-    secondary: "bg-white hover:bg-gray-100 text-black border border-gray-300",
-    outline:
-      "bg-transparent hover:bg-gray-100 text-black border border-gray-300",
-  };
-
-  const sizeClasses = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
-  };
-
   return (
-    <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+    <NBButton
+      variant={variantMap[variant]}
+      size={sizeMap[size]}
+      className={className}
       {...props}
     >
       {children}
-    </button>
+    </NBButton>
   );
 }
