@@ -56,7 +56,7 @@ export default async function RsvpPreparationPage() {
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-black rounded-none flex items-center justify-center border-[3px] border-black shadow-brutal-sm">
                   <AcademicCapIcon className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default async function RsvpPreparationPage() {
               Configuração de Velocidade
             </h3>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div className="bg-white border-[3px] border-black rounded-none p-6 shadow-brutal-sm">
               <div className="space-y-4">
                 <div>
                   <div className="block text-sm font-medium text-black mb-2">
@@ -104,7 +104,7 @@ export default async function RsvpPreparationPage() {
                   </p>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="bg-white border-[3px] border-black rounded-none p-4">
                   <h4 className="font-medium text-black mb-3">
                     Como funciona o RSVP:
                   </h4>
@@ -118,11 +118,11 @@ export default async function RsvpPreparationPage() {
                   </ul>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-main border-[3px] border-black rounded-none p-4 shadow-brutal-sm">
                   <h4 className="font-medium text-black mb-2">
                     Instruções importantes:
                   </h4>
-                  <ul className="text-sm text-gray-700 space-y-1">
+                  <ul className="text-sm text-black space-y-1">
                     <li>• Mantenha o foco no centro da tela</li>
                     <li>
                       • Não subvocalize (não "fale" as palavras mentalmente)

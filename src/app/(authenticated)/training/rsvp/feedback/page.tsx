@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
+import { Spinner } from "@/components/ui/spinner";
 import type { TrainingHistory } from "@/types/database";
 import { getTrainingSessionById } from "../../actions";
 
@@ -72,7 +73,7 @@ function RsvpFeedbackPageContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4" />
           <p className="text-gray-600">Carregando resultados...</p>
         </div>
       </div>
@@ -102,8 +103,8 @@ function RsvpFeedbackPageContent() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircleIcon className="h-8 w-8 text-green-600" />
+          <div className="w-16 h-16 bg-main rounded-none border-[3px] border-black flex items-center justify-center mx-auto mb-4 shadow-brutal-sm">
+            <CheckCircleIcon className="h-8 w-8 text-black" />
           </div>
           <h1 className="text-3xl font-bold text-black mb-2">
             Treino Concluído!
@@ -127,8 +128,8 @@ function RsvpFeedbackPageContent() {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
+              <div className="bg-white border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm">
+                <div className="w-12 h-12 bg-black rounded-none flex items-center justify-center mx-auto mb-3">
                   <ChartBarIcon className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-3xl font-bold text-black mb-1">
@@ -137,8 +138,8 @@ function RsvpFeedbackPageContent() {
                 <div className="text-sm text-gray-600">PPM Alcançado</div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
+              <div className="bg-white border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm">
+                <div className="w-12 h-12 bg-black rounded-none flex items-center justify-center mx-auto mb-3">
                   <ClockIcon className="h-6 w-6 text-white" />
                 </div>
                 <div className="text-3xl font-bold text-black mb-1">
@@ -149,41 +150,41 @@ function RsvpFeedbackPageContent() {
             </div>
 
             {/* Motivational Message */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+            <div className="bg-main border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm">
               <h3 className="text-lg font-semibold text-black mb-2">
                 {getMotivationalMessage(sessionData.target_wpm)}
               </h3>
-              <p className="text-gray-700">
+              <p className="text-black">
                 Continue praticando regularmente para ver melhorias ainda
                 maiores na sua velocidade de leitura.
               </p>
             </div>
 
             {/* Next Steps */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="bg-white border-[3px] border-black rounded-none p-6">
               <h3 className="text-lg font-semibold text-black mb-4">
                 Próximos Passos
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-gray-600">1</span>
+                  <div className="w-6 h-6 bg-main rounded-none border-[3px] border-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-medium text-black">1</span>
                   </div>
                   <p className="text-gray-700">
                     Pratique regularmente para manter e melhorar sua velocidade
                   </p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-gray-600">2</span>
+                  <div className="w-6 h-6 bg-main rounded-none border-[3px] border-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-medium text-black">2</span>
                   </div>
                   <p className="text-gray-700">
                     Faça novas avaliações para medir seu progresso
                   </p>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-gray-600">3</span>
+                  <div className="w-6 h-6 bg-main rounded-none border-[3px] border-black flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-medium text-black">3</span>
                   </div>
                   <p className="text-gray-700">
                     Aumente gradualmente a velocidade conforme se sentir
@@ -231,7 +232,7 @@ export default function RsvpFeedbackPage() {
       fallback={
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+            <Spinner size="lg" className="mx-auto mb-4" />
             <p className="text-gray-600">Carregando resultados...</p>
           </div>
         </div>

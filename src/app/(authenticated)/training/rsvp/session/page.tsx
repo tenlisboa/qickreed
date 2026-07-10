@@ -3,7 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
+import Button from "@/components/Button";
 import RsvpDisplay from "@/components/RsvpDisplay";
+import { Spinner } from "@/components/ui/spinner";
 import type { Text } from "@/types/database";
 
 function RsvpSessionPageContent() {
@@ -82,7 +84,7 @@ function RsvpSessionPageContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4" />
           <p className="text-gray-600">Carregando treinamento...</p>
         </div>
       </div>
@@ -97,13 +99,9 @@ function RsvpSessionPageContent() {
             Erro ao carregar treinamento
           </h2>
           <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            type="button"
-            onClick={() => router.push("/training")}
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-          >
+          <Button variant="primary" onClick={() => router.push("/training")}>
             Voltar ao Treinamento
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -125,7 +123,7 @@ export default function RsvpSessionPage() {
       fallback={
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+            <Spinner size="lg" className="mx-auto mb-4" />
             <p className="text-gray-600">Carregando treinamento...</p>
           </div>
         </div>

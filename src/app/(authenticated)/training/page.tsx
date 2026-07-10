@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
+import { Badge } from "@/components/ui/badge";
 import { getTrainingHistory } from "./actions";
 
 export default async function TrainingPage() {
@@ -31,7 +32,7 @@ export default async function TrainingPage() {
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-black rounded-none flex items-center justify-center border-[3px] border-black shadow-brutal-sm">
                   <AcademicCapIcon className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -45,15 +46,9 @@ export default async function TrainingPage() {
                   subvocalização e aumentando sua velocidade de leitura.
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                    Elimina subvocalização
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                    Aumenta velocidade
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                    Melhora foco
-                  </span>
+                  <Badge variant="neutral">Elimina subvocalização</Badge>
+                  <Badge variant="neutral">Aumenta velocidade</Badge>
+                  <Badge variant="neutral">Melhora foco</Badge>
                 </div>
                 <Link href="/training/rsvp">
                   <Button variant="primary" className="px-8">
@@ -80,8 +75,8 @@ export default async function TrainingPage() {
                     className="flex items-center justify-between border-b border-gray-100 pb-3 last:border-b-0"
                   >
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <AcademicCapIcon className="h-5 w-5 text-gray-600" />
+                      <div className="w-10 h-10 bg-gray-100 rounded-none border-[3px] border-black flex items-center justify-center">
+                        <AcademicCapIcon className="h-5 w-5 text-black" />
                       </div>
                       <div>
                         <p className="font-medium text-black">
