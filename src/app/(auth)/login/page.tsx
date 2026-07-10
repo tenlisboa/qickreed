@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import Button from "@/components/Button";
+import { useActionState } from "react";
 import Card from "@/components/Card";
+import SubmitButton from "@/components/SubmitButton";
+import { Alert } from "@/components/ui/alert";
 import { Divider } from "@/components/ui/divider";
 import { FormControl } from "@/components/ui/form-control";
 import { Input } from "@/components/ui/input";
@@ -8,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { login } from "./actions";
 
 export default function LoginPage() {
+  const [state, formAction] = useActionState(login, null);
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="w-full max-w-md">
@@ -19,7 +25,12 @@ export default function LoginPage() {
 
         {/* Login Form Card */}
         <Card shadow="md" padding="lg">
-          <form className="space-y-6">
+          <form action={formAction} className="space-y-6">
+            {/* Inline error */}
+            {state?.error ? (
+              <Alert variant="error">{state.error.message}</Alert>
+            ) : null}
+
             {/* Email Input */}
             <FormControl>
               <Label htmlFor="email">Email</Label>
@@ -57,14 +68,13 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-            <Button
-              type="submit"
-              formAction={login}
+            <SubmitButton
               variant="primary"
               className="w-full"
+              pendingLabel="Entrando…"
             >
               Sign In
-            </Button>
+            </SubmitButton>
           </form>
 
           {/* Divider */}
