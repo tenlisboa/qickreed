@@ -40,7 +40,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "daisyui": "^5.2.3",
     "supabase": "^2.109.1",
     "tailwindcss": "^4",
     "typescript": "^5"
