@@ -34,7 +34,7 @@ src/
 └── utils/
     ├── auth/admin.ts        # checkAdminAccess(), getUserRole()
     └── supabase/            # server.ts / client.ts / middleware.ts
-agent_docs/                  # project rules (.mdc)
+agent_docs/                  # project rules (.mdc) + design system (design.md, system.md)
 docs/                        # business_rules.md + features/ behavioral spec
 supabase/                    # config.toml + migrations/
 ```
@@ -64,13 +64,11 @@ Schema lives in `supabase/migrations/`; TS mirrors in `src/types/database.ts` (e
 RLS is enabled on every table: authenticated users read all `text`; users read/insert only their own sessions; admin text management is gated by `is_admin()`.
 
 <important if="you are building or modifying UI, screens, or components">
-Styling is a **neobrutalism** design system (decision AD-005 in `.specs/STATE.md`). The visual language: thick **3px solid black borders**, **hard zero-blur offset shadows** (`--shadow-brutal` / `-sm` / `-lg`), **square corners** (`--radius: 0`), flat fills, and **physical hover/active** interactions (element shifts toward the shadow on hover; on active the shadow offset collapses to 0 and the element translates by the offset). Bold everywhere — including the RSVP training and assessment reading surfaces.
+Styling is a **neobrutalism** design system (decision AD-005 in `.specs/STATE.md`): 3px solid black borders, hard zero-blur offset shadows (`--shadow-brutal` / `-sm` / `-lg`), square corners (`--radius: 0`), flat fills, physical hover/active. Two accents only — `#FFD23F` (`--main`: primary/highlights/active) and `#FF6B6B` (`--error`: errors only); text on accents is always black; success is non-color (no green). **DaisyUI is fully removed — do not reintroduce it or any DaisyUI component class.**
 
-Palette: monochrome black/white/gray base **plus two accents** — `#FFD23F` (yellow, `--main`: primary actions, highlights, active states) and `#FF6B6B` (red, `--error`: error states only). Text on either accent is always **black** (both pass WCAG AA). Success is **non-color**: icon + pt-BR text + thick black border (no green). Never use white-on-accent.
+The full contract is canonical and split: [`agent_docs/design.md`](agent_docs/design.md) (tokens, palette, banned list) and [`agent_docs/system.md`](agent_docs/system.md) (components, usage, when/when-not). A path-scoped rule (`.claude/rules/design-system.md`) auto-loads these constraints when you touch `src/components/**`, `src/app/**/*.tsx`, or `src/app/globals.css`; **read both docs before any UI work**. Components: `neobrutal-ui` primitives in `src/components/ui/*` + hand-rolled primitives in `src/components/ui/{select,radio,spinner,table,join,divider,form-control}.tsx`, themed via tokens in `src/app/globals.css` (`:root` vars + `@theme inline`). Prefer the wrappers in `src/components/{Button,Card,ScrollLockTextArea,QuizQuestion,DeleteTextModal,Sidebar,Timer,RsvpDisplay,RichTextEditor}.tsx` so call sites stay stable; use Heroicons; never rebuild an existing component or invent Button/Card variants.
 
-Components come from **neobrutal-ui** (copied into `src/components/ui/*` via CLI: button, card, input, textarea, label, checkbox, badge, alert, dialog) plus **hand-rolled primitives** (`src/components/ui/{select,radio,spinner,table,join,divider,form-control}.tsx`), all themed via the token system in `src/app/globals.css` (`:root` CSS vars + `@theme inline` Tailwind mapping). Existing wrappers (`src/components/{Button,Card,ScrollLockTextArea,QuizQuestion,DeleteTextModal,Sidebar,Timer,RsvpDisplay,RichTextEditor}.tsx`) delegate to these primitives — prefer the wrappers so call sites stay stable. Use Heroicons for icons. DaisyUI is fully removed — do not reintroduce it or any DaisyUI component class. Follow the full conventions in `agent_docs/ui-ux_guidelines.mdc` for token + class patterns.
-
-Accessibility: every input needs an associated `<label htmlFor>`, `required` where applicable, and a visible focus state (the `focus-brutal` utility provides a 3px solid black `focus-visible` outline). Mobile-first; use Tailwind responsive prefixes. Meet WCAG AA contrast.
+Accessibility: every input needs an associated `<label htmlFor>` and `required` where applicable; every interactive element needs a visible `focus-brutal` state. Mobile-first; meet WCAG AA contrast.
 </important>
 
 <important if="you are working on the assessment or RSVP training logic">
@@ -98,4 +96,4 @@ Admin routes must call `checkAdminAccess()` from `src/utils/auth/admin.ts` first
 
 Biome enforces formatting and import ordering (`organizeImports` is on) — don't restate those rules by hand; run `pnpm lint` / `pnpm format`.
 
-Review `docs/` (`business_rules.md`, `docs/features/`) and the relevant `agent_docs/*.mdc` before implementing non-trivial features.
+Review `docs/` (`business_rules.md`, `docs/features/`) and the relevant `agent_docs/*` (`.mdc` rules + `design.md`/`system.md`) before implementing non-trivial features.

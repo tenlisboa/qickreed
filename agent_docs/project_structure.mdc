@@ -5,13 +5,13 @@ alwaysApply: false
 
 # Project Structure
 
-QickReed is a Next.js 15 application built with React 19, TypeScript, Tailwind CSS v4, DaisyUI, and Supabase for authentication. This document outlines the development guidelines, UI/UX standards, and code patterns for the project.
+QickReed is a Next.js 15 application built with React 19, TypeScript, Tailwind CSS v4, a neobrutalism design system (neobrutal-ui + token system — see `design.md`/`system.md`), and Supabase for authentication. This document outlines the development guidelines, UI/UX standards, and code patterns for the project.
 
 ## Technology Stack
 
 - **Framework**: Next.js 15 with App Router
 - **Frontend**: React 19, TypeScript
-- **Styling**: Tailwind CSS v4, DaisyUI
+- **Styling**: Tailwind CSS v4 + neobrutalism (neobrutal-ui primitives + token system in `src/app/globals.css`)
 - **Authentication**: Supabase
 - **Linting/Formatting**: Biome
 - **Package Manager**: pnpm
