@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
+import { Spinner } from "@/components/ui/spinner";
 import type { DashboardData } from "@/types/database";
 import { getDashboardData } from "./actions";
 
@@ -71,7 +72,7 @@ export default function DashboardPage() {
     return (
       <div className="p-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <Spinner size="lg" className="mx-auto mb-4 block" />
           <p className="text-gray-600">Carregando dashboard...</p>
         </div>
       </div>
@@ -150,7 +151,7 @@ export default function DashboardPage() {
               <div className="text-sm text-gray-600">PPM Atual</div>
             </div>
             <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${wpmLevel.bg} ${wpmLevel.color}`}
+              className={`inline-flex items-center px-3 py-1 rounded-base text-sm font-bold border-[3px] border-black shadow-brutal-sm ${wpmLevel.bg} ${wpmLevel.color}`}
             >
               {wpmLevel.level}
             </div>
@@ -167,7 +168,7 @@ export default function DashboardPage() {
               <div className="text-sm text-gray-600">Compreensão</div>
             </div>
             <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${comprehensionLevel.bg} ${comprehensionLevel.color}`}
+              className={`inline-flex items-center px-3 py-1 rounded-base text-sm font-bold border-[3px] border-black shadow-brutal-sm ${comprehensionLevel.bg} ${comprehensionLevel.color}`}
             >
               {comprehensionLevel.level}
             </div>
@@ -183,7 +184,7 @@ export default function DashboardPage() {
               </div>
               <div className="text-sm text-gray-600">Meta de Treinamento</div>
             </div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
+            <div className="inline-flex items-center px-3 py-1 rounded-base text-sm font-bold border-[3px] border-black shadow-brutal-sm bg-main text-black">
               +20% do atual
             </div>
           </div>
