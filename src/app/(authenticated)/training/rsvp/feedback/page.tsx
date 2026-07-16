@@ -6,6 +6,7 @@ import {
   ChartBarIcon,
   CheckCircleIcon,
   ClockIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,11 +14,13 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import { Spinner } from "@/components/ui/spinner";
-import type { TrainingHistory } from "@/types/database";
-import { getTrainingSessionById } from "../../actions";
+import type { TrainingSessionResult } from "@/types/database";
+import { getTrainingSessionResult } from "../../actions";
 
 function RsvpFeedbackPageContent() {
-  const [sessionData, setSessionData] = useState<TrainingHistory | null>(null);
+  const [sessionData, setSessionData] = useState<TrainingSessionResult | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +30,7 @@ function RsvpFeedbackPageContent() {
 
   const fetchSessionData = useCallback(async () => {
     try {
-      const data = await getTrainingSessionById(sessionId!);
+      const data = await getTrainingSessionResult(sessionId!);
 
       if (!data) {
         setError("Erro ao carregar dados da sessão");
@@ -50,18 +53,6 @@ function RsvpFeedbackPageContent() {
 
     fetchSessionData();
   }, [sessionId, router, fetchSessionData]);
-
-  const getMotivationalMessage = (wpm: number) => {
-    if (wpm >= 400) {
-      return "Excelente! Você está no nível expert de leitura!";
-    } else if (wpm >= 300) {
-      return "Muito bem! Você está progredindo rapidamente!";
-    } else if (wpm >= 200) {
-      return "Bom trabalho! Continue praticando para melhorar ainda mais!";
-    } else {
-      return "Ótimo começo! Com prática regular, você verá melhorias significativas!";
-    }
-  };
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -98,19 +89,40 @@ function RsvpFeedbackPageContent() {
     );
   }
 
+  const passed = sessionData.passed;
+  const hasQuiz = passed !== null;
+  const isInvalidated = passed === false;
+  const nextTargetWpm = sessionData.next_target_wpm;
+
   return (
     <div className="min-h-screen bg-white p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-main rounded-none border-[3px] border-black flex items-center justify-center mx-auto mb-4 shadow-brutal-sm">
-            <CheckCircleIcon className="h-8 w-8 text-black" />
+          <div
+            className={`w-16 h-16 ${
+              isInvalidated ? "bg-main" : "bg-main"
+            } rounded-none border-[3px] border-black flex items-center justify-center mx-auto mb-4 shadow-brutal-sm`}
+          >
+            {isInvalidated ? (
+              <ExclamationTriangleIcon className="h-8 w-8 text-black" />
+            ) : (
+              <CheckCircleIcon className="h-8 w-8 text-black" />
+            )}
           </div>
           <h1 className="text-3xl font-bold text-black mb-2">
-            Treino Concluído!
+            {isInvalidated
+              ? "Sessão Invalidada"
+              : hasQuiz
+                ? "Sessão Validada!"
+                : "Treino Concluído!"}
           </h1>
           <p className="text-gray-600">
-            Parabéns por completar seu treinamento RSVP
+            {isInvalidated
+              ? "Sobrecarga cognitiva detectada — velocidade sem retenção"
+              : hasQuiz
+                ? "Sua compreensão foi validada"
+                : "Parabéns por completar seu treinamento RSVP"}
           </p>
         </div>
 
@@ -125,6 +137,29 @@ function RsvpFeedbackPageContent() {
                 {new Date(sessionData.created_at).toLocaleDateString("pt-BR")}
               </p>
             </div>
+
+            {/* Validation banner */}
+            {hasQuiz && (
+              <div
+                className={`border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm ${
+                  isInvalidated ? "bg-white" : "bg-main"
+                }`}
+              >
+                <h3 className="text-lg font-semibold text-black mb-2">
+                  {isInvalidated
+                    ? "Compreensão insuficiente"
+                    : "Compreensão validada"}
+                </h3>
+                <p className="text-black">
+                  {sessionData.comprehension_score !== null
+                    ? `Pontuação de compreensão: ${Math.round(sessionData.comprehension_score)}%`
+                    : ""}
+                  {isInvalidated
+                    ? " — mínimo de 60% não atingido."
+                    : " — acima de 60%."}
+                </p>
+              </div>
+            )}
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,14 +184,25 @@ function RsvpFeedbackPageContent() {
               </div>
             </div>
 
-            {/* Motivational Message */}
-            <div className="bg-main border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm">
+            {/* Outcome message */}
+            <div
+              className={`border-[3px] border-black rounded-none p-6 text-center shadow-brutal-sm ${
+                isInvalidated ? "bg-white" : "bg-main"
+              }`}
+            >
               <h3 className="text-lg font-semibold text-black mb-2">
-                {getMotivationalMessage(sessionData.target_wpm)}
+                {isInvalidated
+                  ? "Próximo treino com PPM reduzido em 10%"
+                  : hasQuiz
+                    ? "PPM validado como seu novo benchmark"
+                    : "Continue praticando para evoluir sua velocidade"}
               </h3>
               <p className="text-black">
-                Continue praticando regularmente para ver melhorias ainda
-                maiores na sua velocidade de leitura.
+                {isInvalidated
+                  ? `O PPM desta sessão foi invalidado. Seu próximo treino usará ${nextTargetWpm} PPM para reduzir a carga cognitiva.`
+                  : hasQuiz
+                    ? "Sua velocidade foi validada pela compreensão e passa a ser sua referência para os próximos treinos."
+                    : "Continue praticando regularmente para ver melhorias ainda maiores na sua velocidade de leitura."}
               </p>
             </div>
 

@@ -1,6 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  calculateComprehensionResult,
+  isPassingComprehension,
+} from "@/lib/utils";
 import type {
   QuizData,
   Text,
@@ -8,10 +12,6 @@ import type {
   TrainingSessionResult,
   TrainingType,
 } from "@/types/database";
-import {
-  calculateComprehensionResult,
-  isPassingComprehension,
-} from "@/lib/utils";
 import { getRequestLogger } from "@/utils/logging/request-logger";
 import { createClient } from "@/utils/supabase/server";
 
@@ -105,10 +105,21 @@ export async function createTrainingSession(
   durationSeconds: number,
 ): Promise<string | null> {
   const supabase = await createClient();
+  const log = await getRequestLogger({ module: "createTrainingSession" });
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    log.error({ err: userError }, "Failed to get user");
+    return null;
+  }
 
   const { data, error } = await supabase
     .from("training_session")
     .insert({
+      user_id: user.id,
       text_id: textId,
       training_type: trainingType,
       target_wpm: targetWpm,
@@ -118,7 +129,6 @@ export async function createTrainingSession(
     .single();
 
   if (error) {
-    const log = await getRequestLogger({ module: "createTrainingSession" });
     log.error({ err: error }, "Failed to create training session");
     return null;
   }
@@ -236,7 +246,8 @@ export async function getTrainingSessionResult(
   return {
     id: data.id,
     text_title:
-      (data.text as unknown as { title: string } | null)?.title || "Texto não encontrado",
+      (data.text as unknown as { title: string } | null)?.title ||
+      "Texto não encontrado",
     target_wpm: targetWpm,
     duration_time_s: data.duration_time_s,
     comprehension_score: comprehension,
@@ -299,7 +310,8 @@ export async function getTrainingSessionDetails(sessionId: string): Promise<{
     text_id: data.text_id,
     target_wpm: data.target_wpm,
     text_title:
-      (data.text as unknown as { title: string } | null)?.title || "Texto não encontrado",
+      (data.text as unknown as { title: string } | null)?.title ||
+      "Texto não encontrado",
   };
 }
 
@@ -359,8 +371,9 @@ export async function submitTrainingQuiz(
     return { success: false, error: "Sessão de treinamento não encontrada" };
   }
 
-  const quizJson = (session.text as unknown as { quiz_json: QuizData | null } | null)
-    ?.quiz_json;
+  const quizJson = (
+    session.text as unknown as { quiz_json: QuizData | null } | null
+  )?.quiz_json;
   if (!quizJson || !quizJson.questions || !quizJson.questions.length) {
     return { success: false, error: "Quiz não disponível para este texto" };
   }
