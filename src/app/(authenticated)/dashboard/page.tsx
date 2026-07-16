@@ -79,10 +79,6 @@ export default function DashboardPage() {
     if (!dashboardData?.timeline?.length) return [];
     return dashboardData.timeline.map((point) => ({
       isoDate: point.date,
-      date: new Date(point.date).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-      }),
       ppm: point.ppm,
       comprehension: point.comprehension,
       type: point.type,
@@ -236,7 +232,13 @@ export default function DashboardPage() {
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
-                  dataKey="date"
+                  dataKey="isoDate"
+                  tickFormatter={(isoDate: string) =>
+                    new Date(isoDate).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                    })
+                  }
                   stroke="#6b7280"
                   fontSize={12}
                   tickLine={false}
@@ -285,9 +287,7 @@ export default function DashboardPage() {
                     fontWeight: 600,
                   }}
                   labelFormatter={(_label, payload) => {
-                    const iso =
-                      payload?.[0]?.payload?.isoDate ??
-                      payload?.[0]?.payload?.date;
+                    const iso = payload?.[0]?.payload?.isoDate;
                     if (!iso) return "";
                     return new Date(iso).toLocaleDateString("pt-BR", {
                       day: "2-digit",
