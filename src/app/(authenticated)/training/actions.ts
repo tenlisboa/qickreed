@@ -73,7 +73,7 @@ export async function getTrainingHistory(): Promise<TrainingHistory[]> {
       comprehension_score: session.comprehension_score ?? null,
       passed: session.passed ?? null,
       created_at: session.created_at,
-      text: session.text as { title: string } | null,
+      text: session.text as unknown as { title: string } | null,
     }),
   );
 }
@@ -184,7 +184,7 @@ export async function getTrainingSessionById(
     comprehension_score: data.comprehension_score ?? null,
     passed: data.passed ?? null,
     created_at: data.created_at,
-    text: data.text as { title: string } | null,
+    text: data.text as unknown as { title: string } | null,
   });
 }
 
@@ -236,7 +236,7 @@ export async function getTrainingSessionResult(
   return {
     id: data.id,
     text_title:
-      (data.text as { title: string } | null)?.title || "Texto não encontrado",
+      (data.text as unknown as { title: string } | null)?.title || "Texto não encontrado",
     target_wpm: targetWpm,
     duration_time_s: data.duration_time_s,
     comprehension_score: comprehension,
@@ -299,7 +299,7 @@ export async function getTrainingSessionDetails(sessionId: string): Promise<{
     text_id: data.text_id,
     target_wpm: data.target_wpm,
     text_title:
-      (data.text as { title: string } | null)?.title || "Texto não encontrado",
+      (data.text as unknown as { title: string } | null)?.title || "Texto não encontrado",
   };
 }
 
@@ -359,7 +359,7 @@ export async function submitTrainingQuiz(
     return { success: false, error: "Sessão de treinamento não encontrada" };
   }
 
-  const quizJson = (session.text as { quiz_json: QuizData | null } | null)
+  const quizJson = (session.text as unknown as { quiz_json: QuizData | null } | null)
     ?.quiz_json;
   if (!quizJson || !quizJson.questions || !quizJson.questions.length) {
     return { success: false, error: "Quiz não disponível para este texto" };
@@ -416,7 +416,7 @@ export async function submitTrainingQuiz(
     result: {
       id: sessionId,
       text_title:
-        (session.text as { title: string } | null)?.title ||
+        (session.text as unknown as { title: string } | null)?.title ||
         "Texto não encontrado",
       target_wpm: session.target_wpm,
       duration_time_s: 0,

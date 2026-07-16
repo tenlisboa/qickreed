@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Radio } from "@/components/ui/radio";
-import { READING_METHOD_LABELS, type ReadingMethod } from "@/types/database";
+import { READING_METHOD_LABELS, ReadingMethod } from "@/types/database";
 
 interface ReadingMethodModalProps {
   isOpen: boolean;

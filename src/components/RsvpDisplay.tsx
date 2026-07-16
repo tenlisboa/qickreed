@@ -53,6 +53,7 @@ export default function RsvpDisplay({
   const startTimeRef = useRef(startTime);
   const pausedTimeRef = useRef(pausedTime);
   const totalPausedTimeRef = useRef(totalPausedTime);
+  const onBreakRef = useRef(onBreak);
   const regressionLogRef = useRef<RegressionEvent[]>([]);
 
   const words = text.split(/\s+/).filter((word) => word.length > 0);
@@ -78,6 +79,9 @@ export default function RsvpDisplay({
   useEffect(() => {
     totalPausedTimeRef.current = totalPausedTime;
   }, [totalPausedTime]);
+  useEffect(() => {
+    onBreakRef.current = onBreak;
+  }, [onBreak]);
 
   const handleComplete = useCallback(() => {
     setIsPlaying(false);
@@ -205,13 +209,19 @@ export default function RsvpDisplay({
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden" && isPlayingRef.current) {
         handlePause();
+      } else if (
+        document.visibilityState === "visible" &&
+        isPausedRef.current &&
+        !onBreakRef.current
+      ) {
+        handleResume();
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [handlePause]);
+  }, [handlePause, handleResume]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -223,6 +233,22 @@ export default function RsvpDisplay({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [togglePlayPause]);
+
+  useEffect(() => {
+    const handleAutoStart = () => {
+      if (!startTimeRef.current) {
+        const now = performance.now();
+        setStartTime(now);
+        startTimeRef.current = now;
+      }
+      lastWordTimeRef.current = null;
+      setIsPlaying(true);
+      setIsPaused(false);
+      setOnBreak(false);
+    };
+    window.addEventListener("rsvp-autostart", handleAutoStart);
+    return () => window.removeEventListener("rsvp-autostart", handleAutoStart);
+  }, []);
 
   useEffect(() => {
     const handleSelectStart = (e: Event) => {
