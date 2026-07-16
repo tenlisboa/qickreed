@@ -12,6 +12,35 @@
   --shadow-brutal: 4px 4px 0px 0px var(--black);
   --shadow-brutal-sm: 3px 3px 0px 0px var(--black);
   --shadow-brutal-lg: 6px 6px 0px 0px var(--black);
+
+  /*
+   * Training surface — scoped dark palette for the RSVP tachistoscope only
+   * (PRD Phase 3: "Dark background, bold sans-serif typography"). Decision AD-006:
+   * a scoped dark surface reuses the same neobrutalism tokens (borders, shadows,
+   * accents) without violating the light default theme. Activated by the
+   * `.training-surface` class on the immersive container, not on the app root.
+   */
+  --training-bg: #000000;
+  --training-fg: #ffffff;
+  --training-border: #ffffff;
+}
+
+.training-surface {
+  background: var(--training-bg);
+  color: var(--training-fg);
+}
+
+.training-surface .training-word {
+  color: var(--training-fg);
+}
+
+.training-surface .training-progress-track {
+  background: transparent;
+  border-color: var(--training-border);
+}
+
+.training-surface .training-progress-fill {
+  background: var(--main);
 }
 
 @theme {

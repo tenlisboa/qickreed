@@ -5,10 +5,11 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { getTextById } from "@/app/(authenticated)/admin/texts/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
+import ReadingMethodModal from "@/components/ReadingMethodModal";
 import ScrollLockTextArea from "@/components/ScrollLockTextArea";
 import Timer from "@/components/Timer";
 import { Spinner } from "@/components/ui/spinner";
-import type { Text } from "@/types/database";
+import type { ReadingMethod, Text } from "@/types/database";
 
 function ReadingPageContent() {
   const [text, setText] = useState<Text | null>(null);
@@ -17,6 +18,7 @@ function ReadingPageContent() {
   const [readingTimeMs, setReadingTimeMs] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showMethodModal, setShowMethodModal] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -55,10 +57,24 @@ function ReadingPageContent() {
 
   const handleFinishReading = () => {
     setIsReading(false);
-    // Store reading time in sessionStorage to pass to quiz
+    // Stop the timer first, then prompt for the self-assessment reading method
+    // (PRD Phase 1) before navigating to the comprehension quiz.
+    setShowMethodModal(true);
+  };
+
+  const handleMethodSubmit = (method: ReadingMethod) => {
+    setShowMethodModal(false);
+    // Store reading time + method in sessionStorage to pass to quiz
     sessionStorage.setItem("readingTimeMs", readingTimeMs.toString());
     sessionStorage.setItem("textId", textId!);
+    sessionStorage.setItem("readingMethod", method);
     router.push("/assessment/quiz");
+  };
+
+  const handleMethodClose = () => {
+    setShowMethodModal(false);
+    // Allow the user to re-read / re-time; reset the running state
+    setIsReading(false);
   };
 
   const handleTimeUpdate = (timeMs: number) => {
@@ -166,6 +182,12 @@ function ReadingPageContent() {
           </div>
         </div>
       </div>
+
+      <ReadingMethodModal
+        isOpen={showMethodModal}
+        onClose={handleMethodClose}
+        onSubmit={handleMethodSubmit}
+      />
     </div>
   );
 }

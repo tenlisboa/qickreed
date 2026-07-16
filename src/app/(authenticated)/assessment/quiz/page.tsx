@@ -7,7 +7,7 @@ import Button from "@/components/Button";
 import Card from "@/components/Card";
 import QuizQuestion from "@/components/QuizQuestion";
 import { Spinner } from "@/components/ui/spinner";
-import type { QuizData, Text } from "@/types/database";
+import type { QuizData, ReadingMethod, Text } from "@/types/database";
 import { saveDiagnosticSession } from "../actions";
 
 interface QuizAnswers {
@@ -97,12 +97,15 @@ export default function QuizPage() {
       const comprehensionScore =
         (correctAnswers / quizData.questions.length) * 100;
 
-      // Get reading time from sessionStorage
+      // Get reading time + self-assessed reading method from sessionStorage
       const readingTimeMs = parseInt(
         sessionStorage.getItem("readingTimeMs") || "0",
         10,
       );
       const textId = sessionStorage.getItem("textId");
+      const readingMethod =
+        (sessionStorage.getItem("readingMethod") as ReadingMethod | null) ??
+        null;
 
       if (!textId || readingTimeMs === 0) {
         setError("Dados de leitura não encontrados");
@@ -114,6 +117,7 @@ export default function QuizPage() {
         textId,
         readingTimeMs,
         comprehensionScore,
+        readingMethod,
       );
 
       if (result.error) {
@@ -124,6 +128,7 @@ export default function QuizPage() {
       // Clear session storage
       sessionStorage.removeItem("readingTimeMs");
       sessionStorage.removeItem("textId");
+      sessionStorage.removeItem("readingMethod");
 
       // Redirect to results
       router.push("/assessment/results");

@@ -1,6 +1,11 @@
 "use client";
 
-import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightIcon,
+  PauseIcon,
+  PlayIcon,
+  StopIcon,
+} from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Button from "@/components/Button";
 
@@ -11,6 +16,17 @@ interface RsvpDisplayProps {
   onStop: () => void;
 }
 
+interface RegressionEvent {
+  type: "mousedown" | "selectstart";
+  wordIndex: number;
+  timestamp: number;
+}
+
+const MIN_WPM = 80;
+const MAX_WPM = 800;
+const WPM_STEP = 10;
+const WORDS_PER_BLOCK = 500;
+
 export default function RsvpDisplay({
   text,
   targetWpm,
@@ -20,230 +36,409 @@ export default function RsvpDisplay({
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [wpm, setWpm] = useState(
+    Math.min(Math.max(targetWpm, MIN_WPM), MAX_WPM),
+  );
   const [startTime, setStartTime] = useState<number | null>(null);
   const [pausedTime, setPausedTime] = useState(0);
   const [totalPausedTime, setTotalPausedTime] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [onBreak, setOnBreak] = useState(false);
+
+  const rafRef = useRef<number | null>(null);
+  const lastWordTimeRef = useRef<number | null>(null);
+  const isPlayingRef = useRef(isPlaying);
+  const isPausedRef = useRef(isPaused);
+  const currentWordIndexRef = useRef(currentWordIndex);
+  const wpmRef = useRef(wpm);
+  const startTimeRef = useRef(startTime);
+  const pausedTimeRef = useRef(pausedTime);
+  const totalPausedTimeRef = useRef(totalPausedTime);
+  const regressionLogRef = useRef<RegressionEvent[]>([]);
 
   const words = text.split(/\s+/).filter((word) => word.length > 0);
-  const wordInterval = Math.round(60000 / targetWpm); // ms per word
 
-  const handlePause = useCallback(() => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      setIsPaused(true);
-      setPausedTime(Date.now());
-    }
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
   }, [isPlaying]);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+  useEffect(() => {
+    currentWordIndexRef.current = currentWordIndex;
+  }, [currentWordIndex]);
+  useEffect(() => {
+    wpmRef.current = wpm;
+  }, [wpm]);
+  useEffect(() => {
+    startTimeRef.current = startTime;
+  }, [startTime]);
+  useEffect(() => {
+    pausedTimeRef.current = pausedTime;
+  }, [pausedTime]);
+  useEffect(() => {
+    totalPausedTimeRef.current = totalPausedTime;
+  }, [totalPausedTime]);
 
   const handleComplete = useCallback(() => {
     setIsPlaying(false);
     setIsPaused(false);
-    const now = Date.now();
-    const totalTime = startTime ? now - startTime - totalPausedTime : 0;
+    const now = performance.now();
+    const st = startTimeRef.current;
+    const tpt = totalPausedTimeRef.current;
+    const totalTime = st ? now - st - tpt : 0;
     const durationSeconds = Math.floor(totalTime / 1000);
     onComplete(durationSeconds);
-  }, [startTime, totalPausedTime, onComplete]);
+  }, [onComplete]);
 
-  // Handle visibility change (pause when tab is not active)
+  const rafLoop = useCallback(
+    (now: number) => {
+      if (!isPlayingRef.current || isPausedRef.current) {
+        rafRef.current = null;
+        return;
+      }
+
+      const last = lastWordTimeRef.current;
+      const interval = 60000 / wpmRef.current;
+
+      if (last === null) {
+        lastWordTimeRef.current = now;
+      } else if (now - last >= interval) {
+        const next = currentWordIndexRef.current + 1;
+
+        if (next >= words.length) {
+          lastWordTimeRef.current = null;
+          rafRef.current = null;
+          handleComplete();
+          return;
+        }
+
+        const isBlockBoundary =
+          next % WORDS_PER_BLOCK === 0 && next < words.length;
+
+        currentWordIndexRef.current = next;
+        setCurrentWordIndex(next);
+        lastWordTimeRef.current = now;
+
+        if (isBlockBoundary) {
+          setIsPlaying(false);
+          setIsPaused(true);
+          setPausedTime(performance.now());
+          setOnBreak(true);
+          rafRef.current = null;
+          return;
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(rafLoop);
+    },
+    [words.length, handleComplete],
+  );
+
+  useEffect(() => {
+    if (isPlaying && !isPaused) {
+      rafRef.current = requestAnimationFrame(rafLoop);
+    }
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, [isPlaying, isPaused, rafLoop]);
+
+  const handleStart = useCallback(() => {
+    if (!startTimeRef.current) {
+      const now = performance.now();
+      setStartTime(now);
+      startTimeRef.current = now;
+    }
+    lastWordTimeRef.current = null;
+    setIsPlaying(true);
+    setIsPaused(false);
+    setOnBreak(false);
+  }, []);
+
+  const handlePause = useCallback(() => {
+    if (isPlayingRef.current) {
+      setIsPlaying(false);
+      setIsPaused(true);
+      setPausedTime(performance.now());
+    }
+  }, []);
+
+  const handleResume = useCallback(() => {
+    if (isPausedRef.current) {
+      const now = performance.now();
+      setTotalPausedTime((prev) => prev + (now - pausedTimeRef.current));
+      lastWordTimeRef.current = null;
+      setIsPlaying(true);
+      setIsPaused(false);
+      setOnBreak(false);
+    }
+  }, []);
+
+  const togglePlayPause = useCallback(() => {
+    if (isPlayingRef.current) {
+      handlePause();
+    } else if (isPausedRef.current) {
+      handleResume();
+    } else {
+      handleStart();
+    }
+  }, [handlePause, handleResume, handleStart]);
+
+  const logRegression = useCallback((type: RegressionEvent["type"]) => {
+    regressionLogRef.current.push({
+      type,
+      wordIndex: currentWordIndexRef.current,
+      timestamp: performance.now(),
+    });
+  }, []);
+
+  const handleStop = useCallback(() => {
+    setIsPlaying(false);
+    setIsPaused(false);
+    onStop();
+  }, [onStop]);
+
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden" && isPlaying) {
+      if (document.visibilityState === "hidden" && isPlayingRef.current) {
         handlePause();
       }
     };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [isPlaying, handlePause]);
+  }, [handlePause]);
 
-  // Handle word progression
   useEffect(() => {
-    if (isPlaying && !isPaused && currentWordIndex < words.length) {
-      intervalRef.current = setTimeout(() => {
-        setCurrentWordIndex((prev) => {
-          if (prev + 1 >= words.length) {
-            handleComplete();
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, wordInterval);
-    } else if (intervalRef.current) {
-      clearTimeout(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearTimeout(intervalRef.current);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlayPause();
       }
     };
-  }, [
-    isPlaying,
-    isPaused,
-    currentWordIndex,
-    wordInterval,
-    words.length,
-    handleComplete,
-  ]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [togglePlayPause]);
 
-  const handleStart = () => {
-    if (!startTime) {
-      setStartTime(Date.now());
-    }
-    setIsPlaying(true);
-    setIsPaused(false);
-  };
+  useEffect(() => {
+    const handleSelectStart = (e: Event) => {
+      e.preventDefault();
+      logRegression("selectstart");
+    };
+    document.addEventListener("selectstart", handleSelectStart);
+    return () => document.removeEventListener("selectstart", handleSelectStart);
+  }, [logRegression]);
 
-  const handleResume = () => {
-    if (isPaused) {
-      const now = Date.now();
-      setTotalPausedTime((prev) => prev + (now - pausedTime));
-      setIsPlaying(true);
-      setIsPaused(false);
-    }
-  };
+  useEffect(() => {
+    const handleMouseDown = (e: Event) => {
+      e.preventDefault();
+      logRegression("mousedown");
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [logRegression]);
 
-  const handleStop = () => {
-    setIsPlaying(false);
-    setIsPaused(false);
-    onStop();
-  };
+  const clampWpm = useCallback((next: number) => {
+    const clamped = Math.min(Math.max(next, MIN_WPM), MAX_WPM);
+    setWpm(clamped);
+  }, []);
 
-  const getCurrentWord = () => {
-    if (currentWordIndex >= words.length) return "";
-    return words[currentWordIndex];
-  };
+  const currentWord =
+    currentWordIndex < words.length ? words[currentWordIndex] : "";
+  const progressPct = words.length
+    ? ((currentWordIndex + 1) / words.length) * 100
+    : 0;
 
-  const getProgress = () => {
-    return ((currentWordIndex + 1) / words.length) * 100;
-  };
-
-  const getEstimatedTimeRemaining = () => {
-    if (!isPlaying && !isPaused) return 0;
-    const remainingWords = words.length - currentWordIndex;
-    return Math.ceil((remainingWords * wordInterval) / 1000);
-  };
+  const currentBlock = Math.floor(currentWordIndex / WORDS_PER_BLOCK);
+  const totalBlocks = Math.max(1, Math.ceil(words.length / WORDS_PER_BLOCK));
+  const wordsInCurrentBlock =
+    currentWordIndex - currentBlock * WORDS_PER_BLOCK + 1;
+  const wordsRemainingInBlock = WORDS_PER_BLOCK - wordsInCurrentBlock;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col border-[3px] border-black">
-      {/* Header */}
-      <div className="bg-white border-b-[3px] border-black p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold text-black">Treinamento RSVP</h1>
-              <div className="text-sm font-bold text-black border-[3px] border-black bg-main rounded-base px-2 py-1">
-                {currentWordIndex + 1} de {words.length} palavras
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              {!isPlaying && !isPaused && (
-                <Button
-                  variant="primary"
-                  onClick={handleStart}
-                  className="px-4 py-2"
-                >
-                  <PlayIcon className="h-4 w-4 mr-2" />
-                  Iniciar
-                </Button>
-              )}
-              {isPlaying && (
-                <Button
-                  variant="secondary"
-                  onClick={handlePause}
-                  className="px-4 py-2"
-                >
-                  <PauseIcon className="h-4 w-4 mr-2" />
-                  Pausar
-                </Button>
-              )}
-              {isPaused && (
-                <Button
-                  variant="primary"
-                  onClick={handleResume}
-                  className="px-4 py-2"
-                >
-                  <PlayIcon className="h-4 w-4 mr-2" />
-                  Retomar
-                </Button>
-              )}
+    <div
+      className="training-surface min-h-screen flex flex-col select-none"
+      style={{ userSelect: "none" }}
+    >
+      {/* Minimal Progress Bar — PRD: minimalist, top of screen */}
+      <div className="border-b-[3px] border-white px-6 py-3">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-2 text-sm font-bold text-white">
+            <span>
+              Palavra {currentWordIndex + 1} / {words.length}
+            </span>
+            {totalBlocks > 1 && (
+              <span>
+                Bloco {currentBlock + 1} / {totalBlocks}
+              </span>
+            )}
+          </div>
+          <div
+            className="training-progress-track w-full h-2 border-[3px] border-white rounded-base overflow-hidden"
+            aria-hidden="true"
+          >
+            <div
+              className="training-progress-fill h-full"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Word Display — dark, bold, center-anchored at viewport middle */}
+      <div className="flex-1 flex items-center justify-center p-8 relative">
+        <div
+          className="training-word text-center"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div
+            className={`font-bold leading-none ${
+              isPlaying ? "opacity-100" : "opacity-70"
+            }`}
+            style={{
+              fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+              fontSize: "clamp(2.5rem, 8vw, 6rem)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {currentWord}
+          </div>
+        </div>
+
+        {/* Idle / paused / break overlays — centered, non-distracting */}
+        {!isPlaying && !isPaused && !onBreak && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+            <p className="text-white text-lg font-bold mb-6 text-center px-4">
+              Clique em &quot;Iniciar&quot; para começar o treinamento
+            </p>
+            <Button
+              variant="primary"
+              onClick={handleStart}
+              className="px-8 py-3 text-lg"
+            >
+              <PlayIcon className="h-5 w-5 mr-2" />
+              Iniciar
+            </Button>
+          </div>
+        )}
+
+        {isPaused && !onBreak && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+            <p className="text-white text-lg font-bold mb-6 text-center px-4">
+              Treinamento pausado. Espaço para retomar.
+            </p>
+            <div className="flex items-center gap-3">
               <Button
-                variant="secondary"
-                onClick={handleStop}
-                className="px-4 py-2"
+                variant="primary"
+                onClick={handleResume}
+                className="px-6 py-3"
               >
-                <StopIcon className="h-4 w-4 mr-2" />
+                <PlayIcon className="h-5 w-5 mr-2" />
+                Retomar
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleStop}
+                className="px-6 py-3 bg-white"
+              >
+                <StopIcon className="h-5 w-5 mr-2" />
                 Parar
               </Button>
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Progress Bar */}
-      <div className="bg-white border-b-[3px] border-black">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="w-full h-3 bg-white border-[3px] border-black rounded-base overflow-hidden">
-            <div
-              className="bg-main h-full transition-all duration-300"
-              style={{ width: `${getProgress()}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-sm font-bold text-black mt-2">
-            <span>Progresso: {Math.round(getProgress())}%</span>
-            {isPlaying && (
-              <span>
-                Tempo restante: {Math.floor(getEstimatedTimeRemaining() / 60)}:
-                {String(getEstimatedTimeRemaining() % 60).padStart(2, "0")}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Word Display */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="border-[3px] border-black bg-white rounded-base shadow-brutal-lg px-12 py-8">
-            <div
-              className={`text-6xl font-bold text-black transition-all duration-200 ${
-                isPlaying ? "opacity-100" : "opacity-60"
-              }`}
-              style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                lineHeight: 1.2,
-              }}
-            >
-              {getCurrentWord()}
+        {onBreak && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-6">
+            <div className="max-w-md text-center">
+              <div className="w-16 h-16 border-[3px] border-white bg-main rounded-base flex items-center justify-center mx-auto mb-6">
+                <ArrowRightIcon className="h-8 w-8 text-black" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-3">
+                Pausa obrigatória
+              </h2>
+              <p className="text-white text-base mb-2">
+                Você completou o bloco {currentBlock + 1} de {totalBlocks}.
+              </p>
+              <p className="text-white/80 text-sm mb-8">
+                Para evitar a fadiga ocular, faça uma pequena pausa antes de
+                continuar. Olhe para um ponto distante por alguns segundos.
+              </p>
+              <Button
+                variant="primary"
+                onClick={handleResume}
+                className="px-8 py-3 text-lg"
+              >
+                <PlayIcon className="h-5 w-5 mr-2" />
+                Continuar
+              </Button>
             </div>
           </div>
-          {!isPlaying && !isPaused && (
-            <p className="text-black mt-8 text-lg font-medium">
-              Clique em &quot;Iniciar&quot; para começar o treinamento
-            </p>
-          )}
-          {isPaused && (
-            <p className="text-black mt-8 text-lg font-medium">
-              Treinamento pausado. Clique em &quot;Retomar&quot; para continuar.
-            </p>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Instructions */}
-      <div className="bg-white border-t-[3px] border-black p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center text-sm font-bold text-black">
-            <p>
-              <strong>Instruções:</strong> Mantenha o foco na palavra central.
-              Não subvocalize. O treinamento pausa automaticamente quando você
-              troca de aba.
-            </p>
+      {/* Minimal WPM control — footer, subtle */}
+      <div className="border-t-[3px] border-white px-6 py-3">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-bold text-white">WPM:</span>
+              <span className="text-sm font-bold text-black bg-main border-[3px] border-white rounded-base px-2 py-1 min-w-[64px] text-center">
+                {wpm}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => clampWpm(wpm - WPM_STEP)}
+                className="px-2 py-1 bg-white"
+                aria-label="Diminuir WPM"
+              >
+                −
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => clampWpm(wpm + WPM_STEP)}
+                className="px-2 py-1 bg-white"
+                aria-label="Aumentar WPM"
+              >
+                +
+              </Button>
+            </div>
+            <input
+              type="range"
+              min={MIN_WPM}
+              max={MAX_WPM}
+              step={WPM_STEP}
+              value={wpm}
+              onChange={(e) => clampWpm(Number(e.target.value))}
+              className="flex-1 max-w-xs accent-[#FFD23F]"
+              aria-label="Ajustar WPM"
+            />
+            {isPlaying && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePause}
+                className="px-4 py-2 bg-white"
+              >
+                <PauseIcon className="h-4 w-4 mr-2" />
+                Pausar
+              </Button>
+            )}
           </div>
+          {totalBlocks > 1 && (
+            <p className="text-xs text-white/70 mt-2 text-center">
+              {wordsRemainingInBlock > 0
+                ? `${wordsRemainingInBlock} palavras até a próxima pausa`
+                : "Pausa obrigatória ao final deste bloco"}
+            </p>
+          )}
         </div>
       </div>
     </div>

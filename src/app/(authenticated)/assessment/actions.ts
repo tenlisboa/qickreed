@@ -1,11 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { categorizeReader } from "@/lib/reading";
 import type {
   AssessmentResult,
   Text,
   UserAssessmentHistory,
 } from "@/types/database";
+import { ReadingMethod } from "@/types/database";
 import type { ActionResult } from "@/utils/actions/types";
 import { fail, ok } from "@/utils/actions/types";
 import { getRequestLogger } from "@/utils/logging/request-logger";
@@ -40,6 +42,7 @@ export async function saveDiagnosticSession(
   textId: string,
   readingTimeMs: number,
   comprehensionScore: number,
+  readingMethod: ReadingMethod | null,
 ): Promise<ActionResult<AssessmentResult>> {
   const supabase = await createClient();
 
@@ -73,8 +76,27 @@ export async function saveDiagnosticSession(
   // Calculate target WPM (+20%)
   const targetWpm = Math.round(wpm * 1.2);
 
+  // Determine whether this is the user's first diagnostic (drives leveling)
+  const { data: existingSessions, error: existingError } = await supabase
+    .from("diagnostic_session")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (existingError) {
+    const log = await getRequestLogger({ module: "saveDiagnosticSession" });
+    log.error({ err: existingError }, "Failed to check prior diagnostics");
+    return fail(
+      "db_error",
+      "Não foi possível verificar o histórico de avaliações",
+      existingError,
+    );
+  }
+
+  const isFirstDiagnostic = !existingSessions || existingSessions.length === 0;
+
   // Save diagnostic session
-  const { data: session, error: sessionError } = await supabase
+  const { error: sessionError } = await supabase
     .from("diagnostic_session")
     .insert({
       user_id: user.id,
@@ -82,9 +104,8 @@ export async function saveDiagnosticSession(
       reading_time_ms: readingTimeMs,
       comprehension_score: comprehensionScore,
       wpm: wpm,
-    })
-    .select()
-    .single();
+      reading_method: readingMethod,
+    });
 
   if (sessionError) {
     const log = await getRequestLogger({ module: "saveDiagnosticSession" });
@@ -96,12 +117,40 @@ export async function saveDiagnosticSession(
     );
   }
 
+  // Phase 1 leveling: on the first completed diagnostic, assign Level 1 via the
+  // SECURITY DEFINER helper (avoids granting users a direct UPDATE policy on profiles).
+  let level = 1;
+  if (isFirstDiagnostic) {
+    const { error: levelError } = await supabase.rpc("set_user_level", {
+      p_user_id: user.id,
+      p_level: 1,
+    });
+    if (levelError) {
+      // Non-fatal: the default column value already covers Level 1; log and continue.
+      const log = await getRequestLogger({ module: "saveDiagnosticSession" });
+      log.warn({ err: levelError }, "Failed to set user level to 1");
+    }
+  } else {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("level")
+      .eq("id", user.id)
+      .single();
+    if (profile?.level) level = profile.level;
+  }
+
+  const method = readingMethod ?? ReadingMethod.INNER_VOICE;
+  const category = categorizeReader(wpm, method);
+
   return ok({
-    wpm: Math.round(wpm * 100) / 100, // Round to 2 decimal places
+    wpm: Math.round(wpm * 100) / 100,
     comprehension_score: Math.round(comprehensionScore * 100) / 100,
     target_wpm: targetWpm,
     text_title: text.title,
     reading_time_seconds: Math.round(readingTimeMs / 1000),
+    reading_method: readingMethod,
+    category: category.label,
+    level,
   });
 }
 
@@ -180,6 +229,14 @@ export async function checkUserHasAssessment(): Promise<boolean> {
 export async function getLatestDiagnosticSession(): Promise<AssessmentResult | null> {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return null;
+  }
+
   const { data, error } = await supabase
     .from("diagnostic_session")
     .select(
@@ -187,11 +244,13 @@ export async function getLatestDiagnosticSession(): Promise<AssessmentResult | n
       wpm,
       comprehension_score,
       reading_time_ms,
+      reading_method,
       text:text_id (
         title
       )
     `,
     )
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .single();
@@ -200,12 +259,29 @@ export async function getLatestDiagnosticSession(): Promise<AssessmentResult | n
     return null;
   }
 
+  const wpm = typeof data.wpm === "number" ? data.wpm : Number(data.wpm);
+  const method = (data.reading_method as ReadingMethod | null) ?? null;
+  const category = method
+    ? categorizeReader(wpm, method).label
+    : "Não categorado";
+
+  // Fetch the user's current level from profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("level")
+    .eq("id", user.id)
+    .single();
+  const level = profile?.level ?? 1;
+
   return {
-    wpm: data.wpm,
+    wpm,
     comprehension_score: data.comprehension_score,
-    target_wpm: Math.round(data.wpm * 1.2),
+    target_wpm: Math.round(wpm * 1.2),
     text_title: (data.text as any)?.title || "Texto não encontrado",
     reading_time_seconds: Math.round(data.reading_time_ms / 1000),
+    reading_method: method,
+    category,
+    level,
   };
 }
 

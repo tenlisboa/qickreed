@@ -3,6 +3,7 @@
 import {
   ArrowLeftIcon,
   BookOpenIcon,
+  ChartBarIcon,
   RocketLaunchIcon,
   TagIcon,
 } from "@heroicons/react/24/outline";
@@ -153,6 +154,32 @@ export default function ResultsPage() {
             </div>
           </Card>
         </div>
+
+        {/* Category + Level (PRD Phase 1 self-assessment output) */}
+        <Card>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="text-center sm:text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <ChartBarIcon className="h-5 w-5 text-black" />
+                <h2 className="text-xl font-bold text-black">
+                  {results.category}
+                </h2>
+              </div>
+              <p className="text-sm text-gray-600">
+                Categoria derivada da sua velocidade de leitura e do método
+                informado.
+              </p>
+            </div>
+            <div className="flex flex-col items-center justify-center border-[3px] border-black bg-main rounded-base shadow-brutal-sm px-6 py-4 min-w-[7rem]">
+              <div className="text-3xl font-bold text-black leading-none">
+                {results.level}
+              </div>
+              <div className="text-xs font-bold text-black mt-1 uppercase tracking-wide">
+                Nível
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Detailed Results */}
         <Card>

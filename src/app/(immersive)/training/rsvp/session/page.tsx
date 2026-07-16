@@ -66,8 +66,12 @@ function RsvpSessionPageContent() {
       });
 
       if (response.ok) {
-        const { sessionId } = await response.json();
-        router.push(`/training/rsvp/feedback?sessionId=${sessionId}`);
+        const { sessionId, hasQuiz } = await response.json();
+        if (hasQuiz) {
+          router.push(`/training/rsvp/quiz?sessionId=${sessionId}`);
+        } else {
+          router.push(`/training/rsvp/feedback?sessionId=${sessionId}`);
+        }
       } else {
         router.push("/training");
       }
@@ -82,10 +86,10 @@ function RsvpSessionPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="training-surface min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Spinner size="lg" className="mx-auto mb-4" />
-          <p className="text-gray-600">Carregando treinamento...</p>
+          <Spinner size="lg" className="mx-auto mb-4 block" />
+          <p className="text-white">Carregando treinamento...</p>
         </div>
       </div>
     );
@@ -93,12 +97,12 @@ function RsvpSessionPageContent() {
 
   if (error || !text) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-black mb-4">
+      <div className="training-surface min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md px-6">
+          <h2 className="text-xl font-bold text-white mb-4">
             Erro ao carregar treinamento
           </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-white/80 mb-6">{error}</p>
           <Button variant="primary" onClick={() => router.push("/training")}>
             Voltar ao Treinamento
           </Button>
@@ -121,10 +125,10 @@ export default function RsvpSessionPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="training-surface min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <Spinner size="lg" className="mx-auto mb-4" />
-            <p className="text-gray-600">Carregando treinamento...</p>
+            <Spinner size="lg" className="mx-auto mb-4 block" />
+            <p className="text-white">Carregando treinamento...</p>
           </div>
         </div>
       }

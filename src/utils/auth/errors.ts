@@ -4,15 +4,15 @@ import type { ActionError } from "@/utils/actions/types";
 export type AuthMode = "login" | "signup";
 
 const GENERIC_MESSAGE: Record<AuthMode, string> = {
-  login: "Erro ao fazer login. Tente novamente",
-  signup: "Erro ao criar conta. Tente novamente",
+  login: "Error signing in. Please try again",
+  signup: "Error creating account. Please try again",
 };
 
 /**
  * Map a Supabase auth error to a user-facing ActionError.
  *
- * - `message` is pt-BR (user-facing, AD-004).
- * - `details` carries the raw Supabase error for dev logs (English, AD-004).
+ * - `message` is English (user-facing).
+ * - `details` carries the raw Supabase error for dev logs (English).
  *
  * "User not found" is intentionally NOT surfaced separately — GoTrue folds it
  * into "Invalid login credentials" to prevent user enumeration; we preserve
@@ -24,7 +24,7 @@ export function mapAuthError(error: AuthError, mode: AuthMode): ActionError {
   if (error.status === 429 || message.includes("too many requests")) {
     return {
       code: "unknown",
-      message: "Muitas tentativas. Aguarde alguns minutos",
+      message: "Too many attempts. Please wait a few minutes",
       details: error,
     };
   }
@@ -32,7 +32,7 @@ export function mapAuthError(error: AuthError, mode: AuthMode): ActionError {
   if (message.includes("email not confirmed")) {
     return {
       code: "unauthorized",
-      message: "Por favor, confirme seu email antes de fazer login",
+      message: "Please confirm your email before signing in",
       details: error,
     };
   }
@@ -40,7 +40,8 @@ export function mapAuthError(error: AuthError, mode: AuthMode): ActionError {
   if (mode === "signup" && message.includes("already registered")) {
     return {
       code: "unauthorized",
-      message: "Este email já está cadastrado. Faça login ou use outro email.",
+      message:
+        "This email is already registered. Sign in or use another email.",
       details: error,
     };
   }
@@ -48,7 +49,7 @@ export function mapAuthError(error: AuthError, mode: AuthMode): ActionError {
   if (message.includes("invalid login credentials")) {
     return {
       code: "unauthorized",
-      message: "Email ou senha inválidos",
+      message: "Invalid email or password",
       details: error,
     };
   }
@@ -60,7 +61,7 @@ export function mapAuthError(error: AuthError, mode: AuthMode): ActionError {
   ) {
     return {
       code: "unknown",
-      message: "Erro de conexão. Tente novamente",
+      message: "Connection error. Please try again",
       details: error,
     };
   }

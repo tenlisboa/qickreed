@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { logout } from "@/app/(auth)/login/actions";
 import type { UserRole } from "@/types/database";
 import { getUserRole } from "@/utils/auth/admin";
 
@@ -63,7 +64,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
   }, []);
 
   const handleLogout = async () => {
-    // TODO: Implement logout functionality
+    await logout();
   };
 
   const navigationItems = getNavigationItems(userRole);
