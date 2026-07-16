@@ -27,7 +27,7 @@ export default function TrainingInputCard({
   suggestedWpm,
 }: TrainingInputCardProps) {
   const [state, formAction] = useActionState<
-    ActionResult<PreparedTrainingText>,
+    ActionResult<PreparedTrainingText> | null,
     FormData
   >(prepareTrainingText, null);
   const [content, setContent] = useState("");

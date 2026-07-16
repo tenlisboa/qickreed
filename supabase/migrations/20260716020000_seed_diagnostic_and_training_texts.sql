@@ -22,13 +22,29 @@
 --   (text.split(/\s+/)) stays clean. Each training text carries a quiz so the
 --   post-RSVP cognitive validation (QICA-12) can run without an LLM.
 --
--- Idempotent: ON CONFLICT DO NOTHING on a natural key (title, language) so the
--- seed can be re-applied safely.
+-- Idempotent: a UNIQUE constraint on (title, language) backs the
+-- ON CONFLICT (title, language) DO NOTHING below so the seed can be re-applied
+-- safely without duplicates.
 
 BEGIN;
 
+-- Natural-key uniqueness so ON CONFLICT (title, language) works. Only applies
+-- to ownerless seed/admin texts (user_id IS NULL); user-pasted training texts
+-- (QICA-15) keep arbitrary titles since each row is owned and filtered by owner.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'text_title_language_key'
+      AND conrelid = 'text'::regclass
+  ) THEN
+    ALTER TABLE text
+      ADD CONSTRAINT text_title_language_key UNIQUE (title, language);
+  END IF;
+END $$;
+
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 1 — "A Revolução da Imprensa" (~560 words, HTML)
+-- Diagnostic text 1 — "A Revolução da Imprensa" (~569 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -50,14 +66,8 @@ VALUES (
 
 <p>Em menos de cinquenta anos, prensas funcionavam em mais de duzentas cidades europeias. Estima-se que, até 1500, mais de vinte milhões de volumes já haviam sido impressos. Esse volume é maior do que a produção acumulada de todos os copistas europeus dos mil anos anteriores combinados.</p>
 
-<p>A revolução da imprensa não foi apenas tecnológica. Ela redistribuiu poder. O monopólio da interpretação dos textos sagrados, antes do clero, passou a ser contestado por leigos que agora possuíam o texto. A autoridade deixou de depender exclusivamente da posse do documento e passou a depender do argumento sobre o documento.</p>
-
-<p>Gutenberg morreu em 1468, quase endividado, após perder o controle de sua oficina em um processo judicial. Ele não viveu para ver o alcance completo do que havia iniciado. Mas o mecanismo que ele montou — tipos móveis, tinta de óleo, prensa de parafuso — permaneceu como base da impressão por mais de quatro séculos, até a invenção da linotipo no final do século dezenove.</p>
-
-<p>É comum comparar a prensa de Gutenberg à internet, e a comparação é útil com uma ressalva. Ambas reduziram o custo de distribuição de informação e deslocaram o controle sobre o conhecimento. Mas a prensa também exigiu investimento inicial significativo, o que permitiu, durante muito tempo, que a censura funcionasse pelo controle das oficinas. A internet, por sua vez, reduziu não só o custo de distribuição, mas também o custo de produção, e foi essa segunda redução que tornou a censura muito mais difícil.</p>
-
 <p>De qualquer forma, o gesto de combinar peças existentes em um novo arranjo funcional permanece como um modelo de inovação. Gutenberg não inventou o metal, nem a tinta, nem a prensa. Inventou a combinação. E, com ela, transformou o conhecimento em algo que, pela primeira vez na história, podia ser copiado sem perda e compartilhado em escala.</p>$diag1$,
-  568,
+  569,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'who',   'question', 'Quem inventou a prensa móvel por volta de 1440?', 'options', jsonb_build_array('Johannes Gutenberg', 'Martinho Lutero', 'Nicolaus Copérnico', 'Galileu Galilei'), 'correct', 0),
@@ -69,10 +79,10 @@ VALUES (
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 2 — "A Fotossíntese e o Ciclo do Carbono" (~580 words, HTML)
+-- Diagnostic text 2 — "A Fotossíntese e o Ciclo do Carbono" (~679 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -99,7 +109,7 @@ VALUES (
 <p>Há também o papel dos oceanos. A água do mar absorve parte do gás carbônico atmosférico, formando ácido carbônico. Esse processo reduz a concentração do gás no ar, mas acidifica a água, o que dificulta a formação de conchas e corais. O equilíbrio entre absorção oceânica e emissão atmosférica é delicado e está sendo alterado pela ação humana.</p>
 
 <p>Entender a fotossíntese, portanto, não é apenas uma questão de botânica. É entender o mecanismo que regula o oxigênio que respiramos, o alimento que consumimos e o clima do planeta. Esse processo silencioso, que acontece nas folhas, é a base sobre a qual a complexidade da vida se sustenta.</p>$diag2$,
-  583,
+  679,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que a fotossíntese converte em energia química?', 'options', jsonb_build_array('Energia luminosa', 'Energia elétrica', 'Energia nuclear', 'Energia mecânica'), 'correct', 0),
@@ -111,10 +121,10 @@ VALUES (
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 3 — "A Memória e o Sono" (~610 words, HTML)
+-- Diagnostic text 3 — "A Memória e o Sono" (~655 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -138,12 +148,10 @@ VALUES (
 
 <p>Há também a questão do esquecimento seletivo. Memórias carregadas de forte conteúdo emocional, como um susto ou uma perda, são processadas de forma diferente. Durante o sono paradoxal, a presença reduzida de noradrenalina parece permitir que o cérebro relembre o evento sem reviver toda a intensidade emocional. Com o tempo, isso ajuda a suavizar o impacto afetivo da memória, sem apagar o conteúdo factual.</p>
 
-<p>Esse mecanismo tem implicações para a compreensão do trauma. Pessoas com perturbações do sono paradoxal, como algumas formas de insônia ou estresse pós-traumático, frequentemente não conseguem dissociar a lembrança do fato do impacto emocional. O sono, nessas condições, deixa de cumprir sua função reguladora e o evento permanece tão vivo quanto no primeiro dia.</p>
-
 <p>A relação entre sono e memória também explica por que a rotina moderna, com telas brilhantes à noite e horários irregulares, prejudica o aprendizado. A luz azul emitida por telas suprime a melatonina, o hormônio que sinaliza ao cérebro que está na hora de dormir. O resultado é um sono mais curto, mais fragmentado e com menos tempo nas fases profundas.</p>
 
 <p>Hábitos simples ajudam a preservar essa função. Manter horários regulares, evitar telas na hora que antecede o sono, expor-se à luz natural pela manhã e reduzir cafeína após o meio-dia são medidas consistentes com o que os estudos recomendam. Não são soluções mágicas, mas preservam as condições sob as quais o cérebro realiza, em silêncio, parte essencial do trabalho que chamamos de aprender.</p>$diag3$,
-  612,
+  655,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que o sono profundo faz com as memórias recém-formadas?', 'options', jsonb_build_array('As apaga completamente', 'As reativa e reforça as conexões sinápticas', 'As transfere apenas para a memória de curto prazo', 'As mantém sem alteração'), 'correct', 1),
@@ -155,10 +163,10 @@ VALUES (
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 1 — "Pensamentos Curtos" (~280 words, PLAIN TEXT)
+-- Training text 1 — "Pensamentos Curtos" (~278 words, PLAIN TEXT)
 -- Plain text only — RsvpDisplay splits on /\s+/; HTML tags would pollute words.
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
@@ -176,7 +184,7 @@ A subvocalização é o hábito de pronunciar mentalmente cada palavra. É um re
 Isso parece estranho no início. A sensação é de estar perdendo conteúdo. Mas, com o treino, a compreensão se mantém e a velocidade cresce. O cérebro é capaz de processar imagens em frações de segundo, e a palavra escrita é, antes de tudo, uma imagem.
 
 O exercício diário, mesmo curto, é mais eficaz do que sessões longas e esporádicas. Dez minutos por dia reorganizam, aos poucos, o padrão de leitura. O progresso não é linear, mas é real.$train1$,
-  281,
+  278,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que a subvocalização faz com a velocidade de leitura?', 'options', jsonb_build_array('Aumenta sem limite', 'Funciona como um teto, limitando ao ritmo da fala', 'Não tem efeito', 'Reduz a compreensão'), 'correct', 1),
@@ -188,10 +196,10 @@ O exercício diário, mesmo curto, é mais eficaz do que sessões longas e espor
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 2 — "O Hábito e o Cérebro" (~420 words, PLAIN TEXT)
+-- Training text 2 — "O Hábito e o Cérebro" (~455 words, PLAIN TEXT)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -212,7 +220,7 @@ O tempo necessário para formar um hábito varia. Estudos indicam que, em média
 Pequenos gestos, repetidos em contextos estáveis, são mais eficazes do que grandes gestos esporádicos. Quem decide ler dez minutos por dia, sempre antes de dormir, costuma ler mais ao longo de um ano do que quem pretende ler duas horas aos sábados. O hábito se constrói por frequência, não por intensidade.
 
 Compreender o mecanismo do hábito ajuda a tratar a própria mente com mais paciência. Não se trata de força de vontade isolada. Trata-se de desenhar o ambiente e o contexto de forma que a repetição ocorra naturalmente e a ação desejada se torne a opção mais fácil.$train2$,
-  423,
+  455,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que o cérebro faz com ações repetidas na mesma situação?', 'options', jsonb_build_array('As elimina', 'As converte em automatismos nos gânglios da base', 'As amplifica no córtex', 'As transfere para o cerebelo'), 'correct', 1),
@@ -224,10 +232,10 @@ Compreender o mecanismo do hábito ajuda a tratar a própria mente com mais paci
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 3 — "O Atraso das Estrelas" (~350 words, PLAIN TEXT)
+-- Training text 3 — "O Atraso das Estrelas" (~401 words, PLAIN TEXT)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -246,7 +254,7 @@ Astrônomos aproveitam esse atraso para estudar o passado do cosmos. Galáxias d
 Há também uma versão cotidiana desse atraso, muito mais modesta. Tudo o que você vê é o que foi. A luz da tela à sua frente levou bilionésimos de segundo para alcançar seus olhos. A voz que você ouve saiu da boca de alguém poucos milissegundos atrás. Nunca percebemos o presente exato, sempre uma cópia levemente atrasada. O atraso das estrelas apenas torna esse fato mais fácil de ver.
 
 Por isso, quando alguém aponta para uma estrela e diz que ela é bela, está fazendo mais do que um elogio. Está elogiando uma imagem que viaja há anos, às vezes há séculos, para chegar até nós. Entre a estrela e o olho, todo esse tempo esteve a caminho.$train3$,
-  353,
+  401,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que significa ver uma estrela como ela era há muito tempo?', 'options', jsonb_build_array('Que a luz viaja instantaneamente', 'Que a luz da estrela levou anos para chegar até nós', 'Que a estrela está parada', 'Que a estrela é uma ilusão'), 'correct', 1),
@@ -258,6 +266,6 @@ Por isso, quando alguém aponta para uma estrela e diz que ela é bela, está fa
   ),
   'pt-BR'
 )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (title, language) DO NOTHING;
 
 COMMIT;

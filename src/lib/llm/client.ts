@@ -30,15 +30,15 @@ export class LlmClientError extends Error {
 }
 
 function getBaseUrl(): string {
-  return process.env.OLLAMA_BASE_URL || DEFAULT_BASE_URL;
+  return process.env.LLM_BASE_URL || DEFAULT_BASE_URL;
 }
 
 function getModel(): string {
-  return process.env.OLLAMA_MODEL || DEFAULT_MODEL;
+  return process.env.LLM_MODEL || DEFAULT_MODEL;
 }
 
 function getApiKey(): string | undefined {
-  return process.env.OLLAMA_API_KEY || undefined;
+  return process.env.LLM_API_KEY || undefined;
 }
 
 export async function callChat(

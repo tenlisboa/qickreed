@@ -18,6 +18,7 @@ function RsvpSessionPageContent() {
   const router = useRouter();
   const textId = searchParams.get("textId");
   const targetWpmParam = searchParams.get("targetWpm");
+  const autoStart = searchParams.get("autoStart") === "true";
 
   const fetchText = useCallback(async () => {
     try {
@@ -48,6 +49,16 @@ function RsvpSessionPageContent() {
 
     fetchText();
   }, [textId, targetWpmParam, router, fetchText]);
+
+  useEffect(() => {
+    if (autoStart && text && !loading) {
+      const timer = setTimeout(() => {
+        const event = new CustomEvent("rsvp-autostart");
+        window.dispatchEvent(event);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [autoStart, text, loading]);
 
   const handleComplete = async (durationSeconds: number) => {
     if (!text) return;
