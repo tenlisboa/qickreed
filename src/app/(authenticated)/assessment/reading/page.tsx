@@ -7,7 +7,6 @@ import Button from "@/components/Button";
 import Card from "@/components/Card";
 import ReadingMethodModal from "@/components/ReadingMethodModal";
 import ScrollLockTextArea from "@/components/ScrollLockTextArea";
-import Timer from "@/components/Timer";
 import { Spinner } from "@/components/ui/spinner";
 import type { ReadingMethod, Text } from "@/types/database";
 
@@ -50,6 +49,16 @@ function ReadingPageContent() {
     fetchText();
   }, [textId, router, fetchText]);
 
+  useEffect(() => {
+    if (!isReading) return;
+
+    const interval = setInterval(() => {
+      setReadingTimeMs((prev) => prev + 100);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [isReading]);
+
   const handleStartReading = () => {
     setIsReading(true);
     setHasStarted(true);
@@ -75,10 +84,6 @@ function ReadingPageContent() {
     setShowMethodModal(false);
     // Allow the user to re-read / re-time; reset the running state
     setIsReading(false);
-  };
-
-  const handleTimeUpdate = (timeMs: number) => {
-    setReadingTimeMs(timeMs);
   };
 
   if (loading) {
@@ -124,26 +129,12 @@ function ReadingPageContent() {
           </p>
         </div>
 
-        {/* Timer */}
-        {hasStarted && (
-          <div className="mb-6">
-            <Timer
-              isRunning={isReading}
-              onTimeUpdate={handleTimeUpdate}
-              className="mb-4"
-            />
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                {isReading ? "Lendo..." : "Leitura pausada"}
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Text Content */}
         <Card>
           <div className="space-y-6">
-            <ScrollLockTextArea content={text.content} className="min-h-96" />
+            {hasStarted && (
+              <ScrollLockTextArea content={text.content} className="min-h-96" />
+            )}
 
             <div className="flex justify-center space-x-4">
               {!hasStarted ? (
