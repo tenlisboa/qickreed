@@ -61,7 +61,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
   // Training sessions: target_wpm is the PPM exercised, ordered ascending by date.
   const { data: trainings, error: trainError } = await supabase
     .from("training_session")
-    .select("id, target_wpm, created_at")
+    .select("id, target_wpm, comprehension_score, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: true });
 
@@ -90,9 +90,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
       date: d.created_at,
       ppm: typeof d.wpm === "number" ? d.wpm : Number(d.wpm),
       comprehension:
-        typeof d.comprehension_score === "number"
-          ? d.comprehension_score
-          : Number(d.comprehension_score),
+        Number(d.comprehension_score),
       type: "diagnostic",
     });
   }
@@ -101,7 +99,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     timeline.push({
       date: t.created_at,
       ppm: t.target_wpm,
-      comprehension: null, // training sessions do not record comprehension
+      comprehension: Number(t.comprehension_score),
       type: "training",
     });
   }

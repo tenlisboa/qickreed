@@ -296,15 +296,9 @@ export default function DashboardPage() {
                     });
                   }}
                   formatter={(value: number | string, name: string) => {
-                    const label =
-                      name === "PPM"
-                        ? "PPM"
-                        : name === "Compreensão"
-                          ? "Compreensão"
-                          : name;
                     const display =
                       name === "Compreensão" ? `${value}%` : String(value);
-                    return [display, label];
+                    return [display, name];
                   }}
                 />
                 {/* Minimum retention threshold (60%) per PRD Phase 4 */}
