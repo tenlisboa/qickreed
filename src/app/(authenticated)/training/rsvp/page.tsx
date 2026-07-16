@@ -5,6 +5,8 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { checkUserHasAssessment } from "@/app/(authenticated)/assessment/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import {
@@ -14,6 +16,11 @@ import {
 } from "../actions";
 
 export default async function RsvpPreparationPage() {
+  const hasAssessment = await checkUserHasAssessment();
+  if (!hasAssessment) {
+    redirect("/assessment");
+  }
+
   const [text, lastWpm, benchmarkWpm] = await Promise.all([
     getRandomTrainingText(),
     getLastDiagnosticWpm(),

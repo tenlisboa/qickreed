@@ -6,12 +6,19 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { checkUserHasAssessment } from "@/app/(authenticated)/assessment/actions";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import { Badge } from "@/components/ui/badge";
 import { getTrainingHistory } from "./actions";
 
 export default async function TrainingPage() {
+  const hasAssessment = await checkUserHasAssessment();
+  if (!hasAssessment) {
+    redirect("/assessment");
+  }
+
   const history = await getTrainingHistory();
 
   return (
