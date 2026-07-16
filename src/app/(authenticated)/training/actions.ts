@@ -80,17 +80,34 @@ export async function getTrainingHistory(): Promise<TrainingHistory[]> {
 
 export async function getRandomTrainingText(): Promise<Text | null> {
   const supabase = await createClient();
+  const log = await getRequestLogger({ module: "getRandomTrainingText" });
+
+  // Keep the randomization business rule in code: Supabase/postgrest-js
+  // cannot express `ORDER BY random()` safely, so fetch IDs and pick one.
+  const { data: ids, error: idsError } = await supabase
+    .from("text")
+    .select("id")
+    .eq("type", "training");
+
+  if (idsError) {
+    log.error({ err: idsError }, "Failed to fetch training text ids");
+    return null;
+  }
+
+  if (!ids || ids.length === 0) {
+    log.warn("No training texts available");
+    return null;
+  }
+
+  const randomId = ids[Math.floor(Math.random() * ids.length)].id;
 
   const { data, error } = await supabase
     .from("text")
     .select("*")
-    .eq("type", "training")
-    .order("random()")
-    .limit(1)
+    .eq("id", randomId)
     .single();
 
   if (error) {
-    const log = await getRequestLogger({ module: "getRandomTrainingText" });
     log.error({ err: error }, "Failed to fetch random training text");
     return null;
   }
