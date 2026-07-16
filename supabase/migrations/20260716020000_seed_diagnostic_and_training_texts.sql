@@ -31,11 +31,20 @@ BEGIN;
 -- Natural-key uniqueness so ON CONFLICT (title, language) works. Only applies
 -- to ownerless seed/admin texts (user_id IS NULL); user-pasted training texts
 -- (QICA-15) keep arbitrary titles since each row is owned and filtered by owner.
-ALTER TABLE text
-  ADD CONSTRAINT text_title_language_key UNIQUE (title, language);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'text_title_language_key'
+      AND conrelid = 'text'::regclass
+  ) THEN
+    ALTER TABLE text
+      ADD CONSTRAINT text_title_language_key UNIQUE (title, language);
+  END IF;
+END $$;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 1 — "A Revolução da Imprensa" (~560 words, HTML)
+-- Diagnostic text 1 — "A Revolução da Imprensa" (~569 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -58,7 +67,7 @@ VALUES (
 <p>Em menos de cinquenta anos, prensas funcionavam em mais de duzentas cidades europeias. Estima-se que, até 1500, mais de vinte milhões de volumes já haviam sido impressos. Esse volume é maior do que a produção acumulada de todos os copistas europeus dos mil anos anteriores combinados.</p>
 
 <p>De qualquer forma, o gesto de combinar peças existentes em um novo arranjo funcional permanece como um modelo de inovação. Gutenberg não inventou o metal, nem a tinta, nem a prensa. Inventou a combinação. E, com ela, transformou o conhecimento em algo que, pela primeira vez na história, podia ser copiado sem perda e compartilhado em escala.</p>$diag1$,
-  563,
+  569,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'who',   'question', 'Quem inventou a prensa móvel por volta de 1440?', 'options', jsonb_build_array('Johannes Gutenberg', 'Martinho Lutero', 'Nicolaus Copérnico', 'Galileu Galilei'), 'correct', 0),
@@ -73,7 +82,7 @@ VALUES (
 ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 2 — "A Fotossíntese e o Ciclo do Carbono" (~580 words, HTML)
+-- Diagnostic text 2 — "A Fotossíntese e o Ciclo do Carbono" (~679 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -115,7 +124,7 @@ VALUES (
 ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Diagnostic text 3 — "A Memória e o Sono" (~610 words, HTML)
+-- Diagnostic text 3 — "A Memória e o Sono" (~655 words, HTML)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -157,7 +166,7 @@ VALUES (
 ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 1 — "Pensamentos Curtos" (~280 words, PLAIN TEXT)
+-- Training text 1 — "Pensamentos Curtos" (~278 words, PLAIN TEXT)
 -- Plain text only — RsvpDisplay splits on /\s+/; HTML tags would pollute words.
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
@@ -175,7 +184,7 @@ A subvocalização é o hábito de pronunciar mentalmente cada palavra. É um re
 Isso parece estranho no início. A sensação é de estar perdendo conteúdo. Mas, com o treino, a compreensão se mantém e a velocidade cresce. O cérebro é capaz de processar imagens em frações de segundo, e a palavra escrita é, antes de tudo, uma imagem.
 
 O exercício diário, mesmo curto, é mais eficaz do que sessões longas e esporádicas. Dez minutos por dia reorganizam, aos poucos, o padrão de leitura. O progresso não é linear, mas é real.$train1$,
-  281,
+  278,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que a subvocalização faz com a velocidade de leitura?', 'options', jsonb_build_array('Aumenta sem limite', 'Funciona como um teto, limitando ao ritmo da fala', 'Não tem efeito', 'Reduz a compreensão'), 'correct', 1),
@@ -190,7 +199,7 @@ O exercício diário, mesmo curto, é mais eficaz do que sessões longas e espor
 ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 2 — "O Hábito e o Cérebro" (~420 words, PLAIN TEXT)
+-- Training text 2 — "O Hábito e o Cérebro" (~455 words, PLAIN TEXT)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -211,7 +220,7 @@ O tempo necessário para formar um hábito varia. Estudos indicam que, em média
 Pequenos gestos, repetidos em contextos estáveis, são mais eficazes do que grandes gestos esporádicos. Quem decide ler dez minutos por dia, sempre antes de dormir, costuma ler mais ao longo de um ano do que quem pretende ler duas horas aos sábados. O hábito se constrói por frequência, não por intensidade.
 
 Compreender o mecanismo do hábito ajuda a tratar a própria mente com mais paciência. Não se trata de força de vontade isolada. Trata-se de desenhar o ambiente e o contexto de forma que a repetição ocorra naturalmente e a ação desejada se torne a opção mais fácil.$train2$,
-  423,
+  455,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que o cérebro faz com ações repetidas na mesma situação?', 'options', jsonb_build_array('As elimina', 'As converte em automatismos nos gânglios da base', 'As amplifica no córtex', 'As transfere para o cerebelo'), 'correct', 1),
@@ -226,7 +235,7 @@ Compreender o mecanismo do hábito ajuda a tratar a própria mente com mais paci
 ON CONFLICT (title, language) DO NOTHING;
 
 -- ───────────────────────────────────────────────────────────────────────────
--- Training text 3 — "O Atraso das Estrelas" (~350 words, PLAIN TEXT)
+-- Training text 3 — "O Atraso das Estrelas" (~401 words, PLAIN TEXT)
 -- ───────────────────────────────────────────────────────────────────────────
 INSERT INTO text (type, title, content, num_words, quiz_json, language)
 VALUES (
@@ -245,7 +254,7 @@ Astrônomos aproveitam esse atraso para estudar o passado do cosmos. Galáxias d
 Há também uma versão cotidiana desse atraso, muito mais modesta. Tudo o que você vê é o que foi. A luz da tela à sua frente levou bilionésimos de segundo para alcançar seus olhos. A voz que você ouve saiu da boca de alguém poucos milissegundos atrás. Nunca percebemos o presente exato, sempre uma cópia levemente atrasada. O atraso das estrelas apenas torna esse fato mais fácil de ver.
 
 Por isso, quando alguém aponta para uma estrela e diz que ela é bela, está fazendo mais do que um elogio. Está elogiando uma imagem que viaja há anos, às vezes há séculos, para chegar até nós. Entre a estrela e o olho, todo esse tempo esteve a caminho.$train3$,
-  353,
+  401,
   jsonb_build_object(
     'questions', jsonb_build_array(
       jsonb_build_object('id', 1, 'type', 'what',  'question', 'O que significa ver uma estrela como ela era há muito tempo?', 'options', jsonb_build_array('Que a luz viaja instantaneamente', 'Que a luz da estrela levou anos para chegar até nós', 'Que a estrela está parada', 'Que a estrela é uma ilusão'), 'correct', 1),
