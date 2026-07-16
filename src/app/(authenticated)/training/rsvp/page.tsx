@@ -109,7 +109,9 @@ export default async function RsvpPreparationPage() {
                     {benchmarkWpm
                       ? "Baseado no seu benchmark validado em sessões anteriores de RSVP"
                       : `Baseado em seu último diagnóstico (${
-                          lastWpm ? `${Math.round(lastWpm)} PPM` : "não disponível"
+                          lastWpm
+                            ? `${Math.round(lastWpm)} PPM`
+                            : "não disponível"
                         }) + 20% de aumento`}
                   </p>
                 </div>
@@ -142,12 +144,12 @@ export default async function RsvpPreparationPage() {
                       aba
                     </li>
                     <li>
-                      • Ao final, você fará um teste de compreensão para
-                      validar a sessão
+                      • Ao final, você fará um teste de compreensão para validar
+                      a sessão
                     </li>
                     <li>
-                      • Compreensão ≥ 60% valida a sessão e mantém o PPM;
-                      abaixo disso reduz o PPM em 10% na próxima
+                      • Compreensão ≥ 60% valida a sessão e mantém o PPM; abaixo
+                      disso reduz o PPM em 10% na próxima
                     </li>
                   </ul>
                 </div>
