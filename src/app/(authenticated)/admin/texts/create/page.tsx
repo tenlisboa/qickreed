@@ -22,8 +22,12 @@ export default function CreateTextPage() {
 
     try {
       const result = await createText({
-        ...data,
+        title: data.title,
+        content: data.content,
         type: data.type as TextType,
+        language: data.language,
+        num_words: data.num_words,
+        quiz_json: (data.quiz as any) ?? null,
       });
 
       if (result.success) {

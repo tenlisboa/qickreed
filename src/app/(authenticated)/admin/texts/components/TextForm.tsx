@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import type { TextType } from "@/types/database";
 import { type TextFormData, textSchema } from "../schemas";
+import QuizEditor, { type QuizQuestionInput } from "./QuizEditor";
 
 interface TextFormProps {
   initialData?: Partial<TextFormData>;
@@ -21,6 +22,19 @@ interface TextFormProps {
   submitButtonText?: string;
   cancelHref?: string;
   isSubmitting?: boolean;
+}
+
+function quizToEditorInput(quiz: unknown): QuizQuestionInput[] | null {
+  if (!quiz || typeof quiz !== "object") return null;
+  const q = quiz as { questions?: QuizQuestionInput[] };
+  if (!Array.isArray(q.questions)) return null;
+  return q.questions.map((qq, i) => ({
+    id: qq.id ?? i,
+    type: qq.type ?? "what",
+    question: qq.question ?? "",
+    options: Array.isArray(qq.options) ? qq.options : ["", "", "", ""],
+    correct: qq.correct ?? 0,
+  }));
 }
 
 export default function TextForm({
@@ -48,6 +62,9 @@ export default function TextForm({
   });
 
   const content = watch("content");
+  const quiz = watch("quiz");
+
+  const [quizErrors, setQuizErrors] = useState<string[]>([]);
 
   // Calculate word count
   const wordCount = content
@@ -63,14 +80,32 @@ export default function TextForm({
     setValue("num_words", wordCount);
   };
 
+  const handleQuizChange = (questions: QuizQuestionInput[] | null) => {
+    const quizValue = questions && questions.length > 0 ? { questions } : null;
+    setValue("quiz", quizValue as any, { shouldValidate: true });
+    setQuizErrors([]);
+  };
+
   const handleFormSubmit = async (data: TextFormData) => {
     setError(null);
+
+    // Validate quiz separately to surface inline errors
+    if (data.quiz) {
+      const result = textSchema.shape.quiz.safeParse(data.quiz);
+      if (!result.success) {
+        const msgs = result.error.issues.map((i) => i.message);
+        setQuizErrors(msgs);
+        setError("Corrija os erros do quiz antes de salvar");
+        return;
+      }
+    }
 
     try {
       await onSubmit({
         ...data,
         num_words: wordCount,
         type: data.type as TextType,
+        quiz: data.quiz ?? null,
       });
     } catch {
       setError("Erro inesperado ao processar formulário");
@@ -143,7 +178,12 @@ export default function TextForm({
           error={errors.content?.message}
         />
 
-        {/* TODO: Add quiz data */}
+        {/* Quiz data */}
+        <QuizEditor
+          value={quizToEditorInput(quiz)}
+          onChange={handleQuizChange}
+          errors={quizErrors}
+        />
 
         {/* Submit Buttons */}
         <div className="flex gap-4 pt-6">

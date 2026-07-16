@@ -52,8 +52,12 @@ export default function EditTextPage({ params }: EditTextPageProps) {
 
     try {
       const result = await updateText(resolvedParams.id, {
-        ...data,
+        title: data.title,
+        content: data.content,
         type: data.type as TextType,
+        language: data.language,
+        num_words: data.num_words,
+        quiz_json: (data.quiz as any) ?? null,
       });
 
       if (result.success) {
@@ -112,6 +116,7 @@ export default function EditTextPage({ params }: EditTextPageProps) {
             type: text.type,
             language: text.language,
             num_words: text.num_words,
+            quiz: text.quiz_json as any,
           }}
           onSubmit={onSubmit}
           submitButtonText="Salvar Alterações"

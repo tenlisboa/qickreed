@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { Text, TextType } from "@/types/database";
+import type { QuizData, Text, TextType } from "@/types/database";
 import { getRequestLogger } from "@/utils/logging/request-logger";
 import { createClient } from "@/utils/supabase/server";
+import { quizDataSchema } from "./schemas";
 
 export interface TextListParams {
   page?: number;
@@ -133,12 +134,20 @@ export async function checkTextInUse(id: string): Promise<boolean> {
   return !!(trainingSessions && trainingSessions.length > 0);
 }
 
+function normalizeQuiz(raw: unknown): QuizData | null {
+  if (!raw || typeof raw !== "object") return null;
+  const parsed = quizDataSchema.safeParse(raw);
+  if (!parsed.success) return null;
+  return { questions: parsed.data.questions };
+}
+
 export interface CreateTextData {
   title: string;
   content: string;
   type: TextType;
   language: string;
   num_words: number;
+  quiz_json?: QuizData | null;
 }
 
 export async function createText(
@@ -146,9 +155,15 @@ export async function createText(
 ): Promise<{ success: boolean; error?: string; id?: string }> {
   const supabase = await createClient();
 
+  const { quiz_json, ...textFields } = data;
+  const payload = {
+    ...textFields,
+    quiz_json: normalizeQuiz(quiz_json),
+  };
+
   const { data: text, error } = await supabase
     .from("text")
-    .insert([data])
+    .insert([payload])
     .select()
     .single();
 
@@ -171,6 +186,7 @@ export interface UpdateTextData {
   type: TextType;
   language: string;
   num_words: number;
+  quiz_json?: QuizData | null;
 }
 
 export async function updateText(
@@ -179,7 +195,13 @@ export async function updateText(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("text").update(data).eq("id", id);
+  const { quiz_json, ...textFields } = data;
+  const payload = {
+    ...textFields,
+    quiz_json: normalizeQuiz(quiz_json),
+  };
+
+  const { error } = await supabase.from("text").update(payload).eq("id", id);
 
   if (error) {
     const log = await getRequestLogger({ module: "updateText" });
