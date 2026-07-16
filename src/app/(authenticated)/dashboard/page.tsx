@@ -297,13 +297,13 @@ export default function DashboardPage() {
                   }}
                   formatter={(value: number | string, name: string) => {
                     const label =
-                      name === "ppm"
+                      name === "PPM"
                         ? "PPM"
-                        : name === "comprehension"
+                        : name === "Compreensão"
                           ? "Compreensão"
                           : name;
                     const display =
-                      name === "comprehension" ? `${value}%` : String(value);
+                      name === "Compreensão" ? `${value}%` : String(value);
                     return [display, label];
                   }}
                 />
