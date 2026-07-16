@@ -15,8 +15,8 @@ The software aims to force the transition from phonetic reading (subvocalization
 
 * **Business Rule:** Every new user requires a baseline measurement before accessing the training engine.
 * **UX Behavior:**
-* Static text is displayed on the screen.
-* An invisible timer starts upon page load.
+* The screen shows a "Começar a Ler" prompt; the text is **not** displayed yet.
+* An invisible timer starts **simultaneously with the text being revealed** when the user clicks to begin — never on page load — so network/render latency cannot pollute the baseline (decision AD-007).
 * The user clicks "Finished Reading." The system records the time and calculates the initial WPM.
 * **Self-assessment:** A single-choice modal asks about the reading method used ("Out loud," "With inner voice," "Visual only").
 * **Output:** The system cross-references the WPM with the response, categorizes the user, and assigns them to Level 1.
