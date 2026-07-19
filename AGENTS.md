@@ -80,7 +80,7 @@ Read `docs/business_rules.md` for the behavioral spec before implementing. Compu
 
 Assessment rules: no upward scroll/regression during reading; the comprehension quiz runs immediately after "Finish Reading"; persist a `DiagnosticSession`.
 
-RSVP training: words display at a single fixed focal point; auto-pause when the user leaves the tab/app and resume in place; persist a `TrainingSession` (no comprehension test in this phase).
+RSVP training: words display at a single fixed focal point; auto-pause when the user leaves the tab/app and resume in place; persist a `TrainingSession` after the reading phase. A post-RSVP cognitive-validation quiz then runs (`training/rsvp/quiz`) and the result is written back to the same `TrainingSession` via the `submitTrainingQuiz` Server Action: `comprehension_score` (0–100) and `passed` (boolean). Pass threshold is **60%** (`isPassingComprehension` in `src/lib/utils.ts`); `calculateComprehensionResult` reduces the next target WPM by **10%** on fail, keeps it unchanged on pass. After the quiz, `profiles.benchmark_wpm` is updated — to the session's `target_wpm` on pass, or to the reduced target on fail — and is the source of truth for the next session's suggested WPM. The `feedback/` route surfaces the score, pass/fail, and next target to the user.
 </important>
 
 <important if="you are working on admin features or privileged writes">
