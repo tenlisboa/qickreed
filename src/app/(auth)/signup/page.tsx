@@ -75,6 +75,8 @@ export default function SignupPage() {
               <label className="flex items-start gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  name="terms"
+                  value="true"
                   required
                   className="h-5 w-5 shrink-0 cursor-pointer appearance-none border-[3px] border-black bg-white transition-brutal focus-brutal checked:bg-black mt-0.5"
                 />

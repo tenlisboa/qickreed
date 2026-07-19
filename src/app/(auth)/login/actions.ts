@@ -32,21 +32,36 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signup(
   _prevState: ActionResult<null> | null,
   formData: FormData,
 ): Promise<ActionResult<null>> {
+  const email = formData.get("email") as string | null;
+  const password = formData.get("password") as string | null;
+  const confirmPassword = formData.get("confirmPassword") as string | null;
+  const terms = formData.get("terms");
+
+  if (!email || !password) {
+    return fail("validation", "Email and password are required");
+  }
+
+  if (password !== confirmPassword) {
+    return fail("validation", "Passwords do not match");
+  }
+
+  if (terms !== "true") {
+    return fail(
+      "validation",
+      "You must accept the Terms of Service and Privacy Policy",
+    );
+  }
+
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+  const data = { email, password };
 
   const { error } = await supabase.auth.signUp(data);
 
@@ -57,12 +72,25 @@ export async function signup(
     return fail(code, message, details);
   }
 
+  // Email confirmation is disabled in this project (supabase/config.toml),
+  // so sign in immediately after signup to establish the session.
+  const { error: signInError } = await supabase.auth.signInWithPassword(data);
+
+  if (signInError) {
+    const log = await getRequestLogger({ module: "signup" });
+    log.warn(
+      { err: signInError, email: data.email },
+      "Post-signup login failed",
+    );
+    redirect("/login");
+  }
+
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/");
+  redirect("/login");
 }

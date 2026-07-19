@@ -39,16 +39,31 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/signup") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/error")
+    pathname !== "/" &&
+    !pathname.startsWith("/login") &&
+    !pathname.startsWith("/signup") &&
+    !pathname.startsWith("/auth") &&
+    !pathname.startsWith("/error")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
+  // Authenticated users visiting /login or /signup are bounced to /dashboard
+  // so they don't see the auth forms while already signed in.
+  if (
+    user &&
+    (pathname.startsWith("/login") || pathname.startsWith("/signup"))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    url.search = "";
     return NextResponse.redirect(url);
   }
 
