@@ -23,7 +23,7 @@ See: .planning/PROJECT.md (updated 2026-07-19)
 Phase: 1 of 4 (Public Landing Page)
 Plan: 0 of TBD in current phase
 Status: Ready to plan
-Last activity: 2026-07-19 — Roadmap created (brownfield v1 finish line: landing, admin hardening, metrics, code health)
+Last activity: 2026-07-19 — Completed quick task 260719-sfz: Implement landing page per QIC-24 spec
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -74,6 +74,12 @@ From `.planning/codebase/CONCERNS.md` — the v1 phases directly close these:
 - `submitTrainingQuiz` fabricated values (CONCERNS "submitTrainingQuiz returns fabricated values") — Phase 3 closes this
 - Dashboard PPM mixes measured vs. aimed WPM (CONCERNS "Feedback/dashboard timeline mixes apples and oranges") — Phase 3 closes this
 - AGENTS.md stale on test framework (CONCERNS "AGENTS.md is stale about the test framework") — Phase 4 closes this
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260719-sfz | Implement landing page per QIC-24 spec | 2026-07-19 | 63aa9ce | [260719-sfz-implement-landing-page-per-qic-24-spec](./quick/260719-sfz-implement-landing-page-per-qic-24-spec/) |
 
 ## Deferred Items
 
