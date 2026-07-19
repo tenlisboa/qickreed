@@ -89,8 +89,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
     timeline.push({
       date: d.created_at,
       ppm: typeof d.wpm === "number" ? d.wpm : Number(d.wpm),
-      comprehension:
-        Number(d.comprehension_score),
+      comprehension: Number(d.comprehension_score),
       type: "diagnostic",
     });
   }
