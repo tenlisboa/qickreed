@@ -44,7 +44,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An admin role user invoking the same actions still successfully creates, updates, and deletes texts; the admin UI flow at `/admin/texts` continues to work end-to-end with no behavior change for admins.
   3. `getTexts` and `getTextById` either return `fail("forbidden", ...)` for non-admins (if admin-only reads are intended) OR are explicitly moved to a public-read path with the rationale recorded in `PLAN.md` — the current state (readable by any authenticated user) is a deliberate, documented choice rather than an accident.
   4. `pnpm lint && pnpm build` succeeds with no new errors.
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 02-01-PLAN.md — Harden admin Server Actions: checkAdminAccess() first on mutating + getTexts, migrate all 5 actions to ActionResult<T>, update 7 callers, add Pino warn log + vitest regression tests
 **Notes**: RLS still gates writes via `is_admin()` — this phase closes the application-layer gap that lets non-admins reach RLS in the first place and stops the misleading `success: true` on RLS-rejected mutations. Return `ActionResult<T>` via `fail()`/`ok()` (AD-001) rather than ad-hoc shapes.
 
 ### Phase 3: Metric Correctness
