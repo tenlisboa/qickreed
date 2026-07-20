@@ -22,14 +22,14 @@ function RsvpSessionPageContent() {
 
   const fetchText = useCallback(async () => {
     try {
-      const data = await getTextById(textId!);
+      const result = await getTextById(textId!);
 
-      if (!data) {
-        setError("Erro ao carregar texto");
+      if (result.error || !result.data) {
+        setError(result.error?.message ?? "Erro ao carregar texto");
         return;
       }
 
-      setText(data);
+      setText(result.data);
     } catch (_err) {
       setError("Erro ao carregar texto");
     } finally {
