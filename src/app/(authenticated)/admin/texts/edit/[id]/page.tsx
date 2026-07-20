@@ -30,9 +30,11 @@ export default function EditTextPage({ params }: EditTextPageProps) {
   useEffect(() => {
     const fetchText = async () => {
       try {
-        const textData = await getTextById(resolvedParams.id);
-        if (textData) {
-          setText(textData);
+        const result = await getTextById(resolvedParams.id);
+        if (result.error) {
+          setError(result.error.message);
+        } else if (result.data) {
+          setText(result.data);
         } else {
           setError("Texto não encontrado");
         }
@@ -60,11 +62,12 @@ export default function EditTextPage({ params }: EditTextPageProps) {
         quiz_json: (data.quiz as any) ?? null,
       });
 
-      if (result.success) {
-        router.push("/admin/texts");
-      } else {
-        setError(result.error || "Erro ao atualizar texto");
+      if (result.error) {
+        setError(result.error.message);
+        return;
       }
+
+      router.push("/admin/texts");
     } catch {
       setError("Erro inesperado ao atualizar texto");
     } finally {

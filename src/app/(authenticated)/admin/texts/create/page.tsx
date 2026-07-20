@@ -30,11 +30,12 @@ export default function CreateTextPage() {
         quiz_json: (data.quiz as any) ?? null,
       });
 
-      if (result.success) {
-        router.push("/admin/texts");
-      } else {
-        setError(result.error || "Erro ao criar texto");
+      if (result.error) {
+        setError(result.error.message);
+        return;
       }
+
+      router.push("/admin/texts");
     } catch {
       setError("Erro inesperado ao criar texto");
     } finally {

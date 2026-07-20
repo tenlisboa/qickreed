@@ -38,12 +38,13 @@ export default function DeleteTextModal({
     try {
       const result = await deleteText(textId);
 
-      if (result.success) {
-        onSuccess();
-        onClose();
-      } else {
-        setError(result.error || "Erro ao deletar texto");
+      if (result.error) {
+        setError(result.error.message);
+        return;
       }
+
+      onSuccess();
+      onClose();
     } catch (_err) {
       setError("Erro inesperado ao deletar texto");
     } finally {
