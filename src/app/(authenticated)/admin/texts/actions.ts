@@ -2,6 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import type { QuizData, Text, TextType } from "@/types/database";
+import type { ActionResult } from "@/utils/actions/types";
+import { fail, ok } from "@/utils/actions/types";
+import { checkAdminAccess } from "@/utils/auth/admin";
 import { getRequestLogger } from "@/utils/logging/request-logger";
 import { createClient } from "@/utils/supabase/server";
 import { quizDataSchema } from "./schemas";
@@ -25,22 +28,20 @@ export async function getTexts({
   search = "",
   sort = "created_at",
   order = "desc",
-}: TextListParams = {}): Promise<TextListResult> {
+}: TextListParams = {}): Promise<ActionResult<TextListResult>> {
+  await checkAdminAccess();
   const supabase = await createClient();
   const limit = 10;
   const offset = (page - 1) * limit;
 
   let query = supabase.from("text").select("*", { count: "exact" });
 
-  // Apply search filter
   if (search) {
     query = query.ilike("title", `%${search}%`);
   }
 
-  // Apply sorting
   query = query.order(sort, { ascending: order === "asc" });
 
-  // Apply pagination
   query = query.range(offset, offset + limit - 1);
 
   const { data, error, count } = await query;
@@ -48,51 +49,50 @@ export async function getTexts({
   if (error) {
     const log = await getRequestLogger({ module: "getTexts" });
     log.error({ err: error }, "Failed to fetch texts");
-    throw new Error("Erro ao buscar textos");
+    return fail("db_error", "Erro ao carregar textos", error);
   }
 
   const totalCount = count || 0;
   const totalPages = Math.ceil(totalCount / limit);
 
-  return {
+  return ok({
     texts: data || [],
     totalCount,
     totalPages,
     currentPage: page,
-  };
+  });
 }
 
-export async function getTextById(id: string): Promise<Text | null> {
+export async function getTextById(
+  id: string,
+): Promise<ActionResult<Text | null>> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("text")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     const log = await getRequestLogger({ module: "getTextById" });
     log.error({ err: error }, "Failed to fetch text");
-    return null;
+    return fail("db_error", "Erro ao carregar texto", error);
   }
 
-  return data;
+  return ok(data);
 }
 
-export async function deleteText(
-  id: string,
-): Promise<{ success: boolean; error?: string }> {
+export async function deleteText(id: string): Promise<ActionResult<null>> {
+  await checkAdminAccess();
   const supabase = await createClient();
 
-  // Check if text is being used in sessions
   const isInUse = await checkTextInUse(id);
   if (isInUse) {
-    return {
-      success: false,
-      error:
-        "Este texto não pode ser deletado pois está sendo usado em sessões de avaliação.",
-    };
+    return fail(
+      "validation",
+      "Este texto não pode ser deletado pois está sendo usado em sessões de avaliação.",
+    );
   }
 
   const { error } = await supabase.from("text").delete().eq("id", id);
@@ -100,20 +100,16 @@ export async function deleteText(
   if (error) {
     const log = await getRequestLogger({ module: "deleteText" });
     log.error({ err: error }, "Failed to delete text");
-    return {
-      success: false,
-      error: "Erro ao deletar texto",
-    };
+    return fail("db_error", "Erro ao deletar texto", error);
   }
 
   revalidatePath("/admin/texts");
-  return { success: true };
+  return ok(null);
 }
 
 export async function checkTextInUse(id: string): Promise<boolean> {
   const supabase = await createClient();
 
-  // Check diagnostic sessions
   const { data: diagnosticSessions } = await supabase
     .from("diagnostic_session")
     .select("id")
@@ -124,7 +120,6 @@ export async function checkTextInUse(id: string): Promise<boolean> {
     return true;
   }
 
-  // Check training sessions
   const { data: trainingSessions } = await supabase
     .from("training_session")
     .select("id")
@@ -152,7 +147,8 @@ export interface CreateTextData {
 
 export async function createText(
   data: CreateTextData,
-): Promise<{ success: boolean; error?: string; id?: string }> {
+): Promise<ActionResult<{ id: string }>> {
+  await checkAdminAccess();
   const supabase = await createClient();
 
   const { quiz_json, ...textFields } = data;
@@ -170,14 +166,11 @@ export async function createText(
   if (error) {
     const log = await getRequestLogger({ module: "createText" });
     log.error({ err: error }, "Failed to create text");
-    return {
-      success: false,
-      error: "Erro ao criar texto",
-    };
+    return fail("db_error", "Erro ao criar texto", error);
   }
 
   revalidatePath("/admin/texts");
-  return { success: true, id: text.id };
+  return ok({ id: text.id });
 }
 
 export interface UpdateTextData {
@@ -192,7 +185,8 @@ export interface UpdateTextData {
 export async function updateText(
   id: string,
   data: UpdateTextData,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<ActionResult<null>> {
+  await checkAdminAccess();
   const supabase = await createClient();
 
   const { quiz_json, ...textFields } = data;
@@ -206,13 +200,10 @@ export async function updateText(
   if (error) {
     const log = await getRequestLogger({ module: "updateText" });
     log.error({ err: error }, "Failed to update text");
-    return {
-      success: false,
-      error: "Erro ao atualizar texto",
-    };
+    return fail("db_error", "Erro ao atualizar texto", error);
   }
 
   revalidatePath("/admin/texts");
   revalidatePath(`/admin/texts/edit/${id}`);
-  return { success: true };
+  return ok(null);
 }
