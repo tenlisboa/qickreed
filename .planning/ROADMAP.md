@@ -46,7 +46,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. `pnpm lint && pnpm build` succeeds with no new errors.
 **Plans**: 1 plan
 Plans:
-- [ ] 02-01-PLAN.md — Harden admin Server Actions: checkAdminAccess() first on mutating + getTexts, migrate all 5 actions to ActionResult<T>, update 7 callers, add Pino warn log + vitest regression tests
+- [x] 02-01-PLAN.md — Harden admin Server Actions: checkAdminAccess() first on mutating + getTexts, migrate all 5 actions to ActionResult<T>, update 7 callers, add Pino warn log + vitest regression tests
 **Notes**: RLS still gates writes via `is_admin()` — this phase closes the application-layer gap that lets non-admins reach RLS in the first place and stops the misleading `success: true` on RLS-rejected mutations. Return `ActionResult<T>` via `fail()`/`ok()` (AD-001) rather than ad-hoc shapes.
 
 ### Phase 3: Metric Correctness
@@ -83,6 +83,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Public Landing Page | 0/TBD | Not started | - |
-| 2. Admin Auth Hardening | 0/TBD | Not started | - |
+| 2. Admin Auth Hardening | 1/1 | Complete | 2026-07-25 |
 | 3. Metric Correctness | 0/TBD | Not started | - |
 | 4. Code Health | 0/TBD | Not started | - |
