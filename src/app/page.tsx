@@ -1,12 +1,8 @@
-import {
-  BookOpenIcon,
-  ChartBarIcon,
-  RocketLaunchIcon,
-} from "@heroicons/react/24/outline";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "QickReed — Treino de Leitura Acelerada",
@@ -14,132 +10,191 @@ export const metadata: Metadata = {
     "Avalie sua velocidade de leitura, treine com RSVP e acompanhe sua evolução.",
 };
 
-const steps = [
-  {
-    icon: BookOpenIcon,
-    title: "1. Avalie",
-    description:
-      "Faça uma avaliação diagnóstica para medir seu PPM e compreensão atuais.",
-  },
-  {
-    icon: RocketLaunchIcon,
-    title: "2. Treine",
-    description:
-      "Pratique com RSVP em um ponto fixo — aumente o ritmo conforme evolui.",
-  },
-  {
-    icon: ChartBarIcon,
-    title: "3. Acompanhe",
-    description:
-      "Veja sua evolução de PPM e compreensão ao longo do tempo no dashboard.",
-  },
-];
-
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+export default function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Hero */}
-      <section className="flex-1 flex items-center justify-center px-6 py-16 sm:py-24">
+      {/* SECTION 1 — HERO */}
+      <section className="px-6 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-main text-black font-bold text-sm border-[3px] border-black shadow-brutal-sm">
-            <RocketLaunchIcon className="h-4 w-4" />
-            Treino de Leitura Acelerada
-          </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black mb-6 leading-tight">
-            Leia <span className="bg-main px-2">mais rápido</span>.
-            <br />
-            Entenda <span className="bg-main px-2">mais</span>.
+            Pare de ler com a “voz na cabeça”.
           </h1>
-
-          <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-            Avalie sua velocidade de leitura, treine com RSVP e acompanhe sua
-            evolução com métricas claras.
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+            O Qickreed é um treinador neurocognitivo que elimina a
+            subvocalização. Dobre sua velocidade de leitura forçando seu cérebro
+            a processar a forma das palavras em vez de ouvir o som, mantendo
+            mais de 60% de retenção.
           </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {user ? (
-              <a href="/dashboard" className="focus-brutal w-full sm:w-auto">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  className="w-full sm:w-auto"
-                >
-                  Ir para o Dashboard
-                </Button>
-              </a>
-            ) : (
-              <>
-                <a href="/signup" className="focus-brutal w-full sm:w-auto">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="w-full sm:w-auto"
-                  >
-                    Criar Conta
-                  </Button>
-                </a>
-                <a href="/login" className="focus-brutal w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto"
-                  >
-                    Entrar
-                  </Button>
-                </a>
-              </>
-            )}
-          </div>
+          <Button variant="primary" size="lg" asChild>
+            <Link href="/signup" className="focus-brutal">
+              Faça o Teste de Nivelamento Gratuito
+            </Link>
+          </Button>
+          <p className="text-sm text-gray-600 mt-4">
+            Leva 2 minutos. Não requer cartão de crédito.
+          </p>
         </div>
       </section>
 
-      {/* How it works */}
+      {/* SECTION 2 — O PROBLEMA */}
       <section className="px-6 py-16 sm:py-24 bg-gray-50 border-t-[3px] border-black">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-black mb-12 text-center">
-            Como funciona
+            Seu cérebro é mais rápido que sua boca. Por que limitar sua leitura
+            à velocidade da fala?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {steps.map((step) => (
-              <Card
-                key={step.title}
-                shadow="md"
-                padding="lg"
-                className="text-center"
-              >
-                <div className="inline-flex items-center justify-center h-14 w-14 mb-4 bg-main text-black border-[3px] border-black shadow-brutal-sm">
-                  <step.icon className="h-7 w-7" />
-                </div>
-                <h3 className="text-xl font-semibold text-black mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-gray-600">{step.description}</p>
-              </Card>
-            ))}
+            <Card shadow="md" padding="lg">
+              <h3 className="text-xl font-semibold text-black mb-3">
+                A Armadilha da Subvocalização
+              </h3>
+              <p className="text-gray-600">
+                A maioria das pessoas estagna em 250 Palavras Por Minuto (PPM)
+                porque “pronuncia” mentalmente cada palavra. Isso é um limite
+                físico da fala, não do cérebro.
+              </p>
+            </Card>
+            <Card shadow="md" padding="lg">
+              <h3 className="text-xl font-semibold text-black mb-3">
+                O Desperdício da Regressão
+              </h3>
+              <p className="text-gray-600">
+                Seus olhos saltam para trás constantemente. Reler as mesmas
+                linhas destrói seu foco e dobra o tempo necessário para terminar
+                um texto.
+              </p>
+            </Card>
+            <Card shadow="md" padding="lg">
+              <h3 className="text-xl font-semibold text-black mb-3">
+                A Consequência
+              </h3>
+              <p className="text-gray-600">
+                Estudar documentações leva horas, livros técnicos se acumulam e
+                a leitura se torna um fardo exaustivo em vez de uma vantagem
+                competitiva.
+              </p>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="px-6 py-16 sm:py-20 border-t-[3px] border-black">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-black mb-6">
-            Pronto para acelerar sua leitura?
+      {/* SECTION 3 — A SOLUÇÃO */}
+      <section className="px-6 py-16 sm:py-24 border-t-[3px] border-black">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-black mb-12 text-center">
+            Reeduque sua mecânica visual em 3 passos controlados.
           </h2>
-          <a
-            href={user ? "/dashboard" : "/signup"}
-            className="focus-brutal inline-block"
-          >
-            <Button variant="primary" size="lg">
-              {user ? "Ir para o Dashboard" : "Começar Agora"}
-            </Button>
-          </a>
+          <ol className="space-y-8 list-none p-0 m-0">
+            <li className="flex gap-5 items-start">
+              <span className="flex-shrink-0 inline-flex items-center justify-center h-12 w-12 bg-main text-black font-bold text-xl border-[3px] border-black shadow-brutal-sm">
+                1
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold text-black mb-2">
+                  A Linha de Base
+                </h3>
+                <p className="text-gray-600">
+                  Começamos medindo seu PPM atual e diagnosticando seu grau de
+                  dependência da voz mental.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-5 items-start">
+              <span className="flex-shrink-0 inline-flex items-center justify-center h-12 w-12 bg-main text-black font-bold text-xl border-[3px] border-black shadow-brutal-sm">
+                2
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold text-black mb-2">
+                  O Motor Taquistoscópio
+                </h3>
+                <p className="text-gray-600">
+                  O software exibe palavras em frações de segundo no centro da
+                  tela. Ao forçar a velocidade para mais de 350 PPM, seu cérebro
+                  não tem tempo físico para subvocalizar.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-5 items-start">
+              <span className="flex-shrink-0 inline-flex items-center justify-center h-12 w-12 bg-main text-black font-bold text-xl border-[3px] border-black shadow-brutal-sm">
+                3
+              </span>
+              <div>
+                <h3 className="text-xl font-semibold text-black mb-2">
+                  Validação Cognitiva via IA
+                </h3>
+                <p className="text-gray-600">
+                  Velocidade sem retenção é inútil. Após cada sessão, nosso LLM
+                  extrai o eixo central do texto e testa sua compreensão.
+                  Pontuações abaixo de 60% bloqueiam o avanço de nível.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      {/* SECTION 4 — ALINHAMENTO DE PÚBLICO */}
+      <section className="px-6 py-16 sm:py-24 bg-gray-50 border-t-[3px] border-black">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-black mb-12 text-center">
+            O Qickreed não é para leitura de lazer. É para absorção de dados.
+          </h2>
+          <ul className="space-y-6 list-none p-0 m-0">
+            <li className="flex gap-4 items-start">
+              <CheckCircleIcon className="h-7 w-7 text-black flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-black">
+                  Profissionais de Tecnologia e Negócios
+                </h3>
+                <p className="text-gray-600">
+                  Que precisam processar relatórios, documentações e artigos
+                  técnicos rapidamente.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4 items-start">
+              <CheckCircleIcon className="h-7 w-7 text-black flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-black">
+                  Estudantes e Acadêmicos
+                </h3>
+                <p className="text-gray-600">
+                  Que lidam com volumes massivos de PDFs e precisam otimizar o
+                  tempo de estudo.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4 items-start">
+              <CheckCircleIcon className="h-7 w-7 text-black flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-semibold text-black">
+                  Pessoas com Déficit de Foco
+                </h3>
+                <p className="text-gray-600">
+                  Que sentem sono ou perdem a concentração após 10 minutos de
+                  leitura tradicional.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* SECTION 5 — FECHAMENTO */}
+      <section className="px-6 py-16 sm:py-24 border-t-[3px] border-black">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-lg sm:text-xl font-semibold text-black mb-6">
+            Junte-se aos testadores beta que aumentaram seu PPM base em 40% nas
+            primeiras duas semanas.
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-black mb-8">
+            Pronto para descobrir sua velocidade real de processamento?
+          </h2>
+          <Button variant="primary" size="lg" asChild>
+            <Link href="/assessment" className="focus-brutal">
+              Descobrir meu PPM atual
+            </Link>
+          </Button>
         </div>
       </section>
     </div>

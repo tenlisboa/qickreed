@@ -27,17 +27,17 @@ export default function QuizPage() {
 
   const fetchText = useCallback(async (textId: string) => {
     try {
-      const data = await getTextById(textId);
+      const result = await getTextById(textId);
 
-      if (!data) {
-        setError("Erro ao carregar texto");
+      if (result.error || !result.data) {
+        setError(result.error?.message ?? "Erro ao carregar texto");
         return;
       }
 
-      setText(data);
+      setText(result.data);
 
-      if (data.quiz_json) {
-        setQuizData(data.quiz_json as QuizData);
+      if (result.data.quiz_json) {
+        setQuizData(result.data.quiz_json as QuizData);
       } else {
         setError("Quiz não encontrado para este texto");
       }

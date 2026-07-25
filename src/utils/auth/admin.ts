@@ -34,6 +34,8 @@ export async function checkAdminAccess(): Promise<{
   }
 
   if (profile.role !== "admin") {
+    const log = await getRequestLogger({ module: "checkAdminAccess" });
+    log.warn({ userId: user.id }, "Non-admin user blocked from admin action");
     redirect("/dashboard");
   }
 

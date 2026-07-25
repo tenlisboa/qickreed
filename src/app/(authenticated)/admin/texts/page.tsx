@@ -177,10 +177,14 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
           sort,
           order,
         });
-        setTexts(result.texts);
-        setTotalCount(result.totalCount);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.currentPage);
+        if (result.error) {
+          return;
+        }
+        const { texts, totalCount, totalPages, currentPage } = result.data;
+        setTexts(texts);
+        setTotalCount(totalCount);
+        setTotalPages(totalPages);
+        setCurrentPage(currentPage);
       } catch {
       } finally {
         setIsLoading(false);
@@ -195,7 +199,6 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
   };
 
   const handleDeleteSuccess = () => {
-    // Refresh the list
     const fetchTexts = async () => {
       try {
         const result = await getTexts({
@@ -204,10 +207,14 @@ export default function TextListPage({ searchParams }: TextListPageProps) {
           sort,
           order,
         });
-        setTexts(result.texts);
-        setTotalCount(result.totalCount);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.currentPage);
+        if (result.error) {
+          return;
+        }
+        const { texts, totalCount, totalPages, currentPage } = result.data;
+        setTexts(texts);
+        setTotalCount(totalCount);
+        setTotalPages(totalPages);
+        setCurrentPage(currentPage);
       } catch {}
     };
     fetchTexts();
